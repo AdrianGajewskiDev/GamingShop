@@ -68,3 +68,5 @@ C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\Gaming
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\GamingShop.Web.csproj.CopyComplete
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\bin\Debug\netcoreapp2.2\GamingShop.Data.dll
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\bin\Debug\netcoreapp2.2\GamingShop.Data.pdb
+C:\Users\adria\Projects\GamingShop\GamingShop.Web\bin\Debug\netcoreapp2.2\GamingShop.Service.dll
+C:\Users\adria\Projects\GamingShop\GamingShop.Web\bin\Debug\netcoreapp2.2\GamingShop.Service.pdb

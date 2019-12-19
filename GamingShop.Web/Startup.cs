@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using GamingShop.Web.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using GamingShop.Service;
 
 namespace GamingShop.Web
 {
@@ -36,6 +37,9 @@ namespace GamingShop.Web
             services.AddDefaultIdentity<IdentityUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
+            services.AddScoped<IGame, GameService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

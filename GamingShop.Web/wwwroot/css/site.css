@@ -205,6 +205,7 @@ body {
 .price {
     width: 40%;
     margin-left: 40px;
+    font-size: 25px;
 }
 /* Game cart ends here */
 

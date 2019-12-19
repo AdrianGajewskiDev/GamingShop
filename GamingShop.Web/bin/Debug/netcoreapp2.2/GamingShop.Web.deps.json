@@ -25,6 +25,7 @@
       "GamingShop.Web/1.0.0": {
         "dependencies": {
           "GamingShop.Data": "1.0.0",
+          "GamingShop.Service": "1.0.0",
           "Microsoft.AspNetCore.App": "2.2.0",
           "Microsoft.AspNetCore.Razor.Design": "2.2.0",
           "Microsoft.NETCore.App": "2.2.0"
@@ -47,6 +48,17 @@
         },
         "compile": {
           "GamingShop.Data.dll": {}
+        }
+      },
+      "GamingShop.Service/1.0.0": {
+        "dependencies": {
+          "GamingShop.Data": "1.0.0"
+        },
+        "runtime": {
+          "GamingShop.Service.dll": {}
+        },
+        "compile": {
+          "GamingShop.Service.dll": {}
         }
       },
       "Microsoft.AspNet.WebApi.Client/5.2.6": {
@@ -3252,6 +3264,11 @@
       "sha512": ""
     },
     "GamingShop.Data/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "GamingShop.Service/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

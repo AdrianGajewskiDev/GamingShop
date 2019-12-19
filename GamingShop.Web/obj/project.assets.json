@@ -4453,6 +4453,19 @@
         "runtime": {
           "bin/placeholder/GamingShop.Data.dll": {}
         }
+      },
+      "GamingShop.Service/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v2.2",
+        "dependencies": {
+          "GamingShop.Data": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/GamingShop.Service.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/GamingShop.Service.dll": {}
+        }
       }
     }
   },
@@ -12076,11 +12089,17 @@
       "type": "project",
       "path": "../GamingShop.Data/GamingShop.Data.csproj",
       "msbuildProject": "../GamingShop.Data/GamingShop.Data.csproj"
+    },
+    "GamingShop.Service/1.0.0": {
+      "type": "project",
+      "path": "../GamingShop.Service/GamingShop.Service.csproj",
+      "msbuildProject": "../GamingShop.Service/GamingShop.Service.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.2": [
       "GamingShop.Data >= 1.0.0",
+      "GamingShop.Service >= 1.0.0",
       "Microsoft.AspNetCore.App >= 2.2.0",
       "Microsoft.AspNetCore.Razor.Design >= 2.2.0",
       "Microsoft.NETCore.App >= 2.2.0"
@@ -12121,6 +12140,9 @@
           "projectReferences": {
             "C:\\Users\\adria\\Projects\\GamingShop\\GamingShop.Data\\GamingShop.Data.csproj": {
               "projectPath": "C:\\Users\\adria\\Projects\\GamingShop\\GamingShop.Data\\GamingShop.Data.csproj"
+            },
+            "C:\\Users\\adria\\Projects\\GamingShop\\GamingShop.Service\\GamingShop.Service.csproj": {
+              "projectPath": "C:\\Users\\adria\\Projects\\GamingShop\\GamingShop.Service\\GamingShop.Service.csproj"
             }
           }
         }
