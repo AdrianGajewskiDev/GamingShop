@@ -24,6 +24,7 @@
     ".NETCoreApp,Version=v2.2": {
       "GamingShop.Web/1.0.0": {
         "dependencies": {
+          "GamingShop.Data": "1.0.0",
           "Microsoft.AspNetCore.App": "2.2.0",
           "Microsoft.AspNetCore.Razor.Design": "2.2.0",
           "Microsoft.NETCore.App": "2.2.0"
@@ -33,6 +34,19 @@
         },
         "compile": {
           "GamingShop.Web.dll": {}
+        }
+      },
+      "GamingShop.Data/1.0.0": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "2.2.0",
+          "Microsoft.EntityFrameworkCore": "2.2.0",
+          "Microsoft.EntityFrameworkCore.SqlServer": "2.2.0"
+        },
+        "runtime": {
+          "GamingShop.Data.dll": {}
+        },
+        "compile": {
+          "GamingShop.Data.dll": {}
         }
       },
       "Microsoft.AspNet.WebApi.Client/5.2.6": {
@@ -3233,6 +3247,11 @@
   },
   "libraries": {
     "GamingShop.Web/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "GamingShop.Data/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
