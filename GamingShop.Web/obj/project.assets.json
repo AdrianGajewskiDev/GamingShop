@@ -4438,6 +4438,20 @@
         "runtime": {
           "lib/netstandard1.3/System.Xml.XPath.XDocument.dll": {}
         }
+      },
+      "GamingShop.Data/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v2.2",
+        "dependencies": {
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "2.2.0",
+          "Microsoft.EntityFrameworkCore": "2.2.0"
+        },
+        "compile": {
+          "bin/placeholder/GamingShop.Data.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/GamingShop.Data.dll": {}
+        }
       }
     }
   },
@@ -12056,10 +12070,16 @@
         "system.xml.xpath.xdocument.4.3.0.nupkg.sha512",
         "system.xml.xpath.xdocument.nuspec"
       ]
+    },
+    "GamingShop.Data/1.0.0": {
+      "type": "project",
+      "path": "../GamingShop.Data/GamingShop.Data.csproj",
+      "msbuildProject": "../GamingShop.Data/GamingShop.Data.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.2": [
+      "GamingShop.Data >= 1.0.0",
       "Microsoft.AspNetCore.App >= 2.2.0",
       "Microsoft.AspNetCore.Razor.Design >= 2.2.0",
       "Microsoft.NETCore.App >= 2.2.0"
@@ -12073,11 +12093,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\adria\\source\\repos\\GamingShop\\GamingShop.Web\\GamingShop.Web.csproj",
+      "projectUniqueName": "C:\\Users\\adria\\Projects\\GamingShop\\GamingShop.Web\\GamingShop.Web.csproj",
       "projectName": "GamingShop.Web",
-      "projectPath": "C:\\Users\\adria\\source\\repos\\GamingShop\\GamingShop.Web\\GamingShop.Web.csproj",
+      "projectPath": "C:\\Users\\adria\\Projects\\GamingShop\\GamingShop.Web\\GamingShop.Web.csproj",
       "packagesPath": "C:\\Users\\adria\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\adria\\source\\repos\\GamingShop\\GamingShop.Web\\obj\\",
+      "outputPath": "C:\\Users\\adria\\Projects\\GamingShop\\GamingShop.Web\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Microsoft\\Xamarin\\NuGet\\",
@@ -12097,7 +12117,11 @@
       },
       "frameworks": {
         "netcoreapp2.2": {
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\adria\\Projects\\GamingShop\\GamingShop.Data\\GamingShop.Data.csproj": {
+              "projectPath": "C:\\Users\\adria\\Projects\\GamingShop\\GamingShop.Data\\GamingShop.Data.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
