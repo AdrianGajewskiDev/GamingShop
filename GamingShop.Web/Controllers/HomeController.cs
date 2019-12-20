@@ -23,19 +23,14 @@ namespace GamingShop.Web.Controllers
         public IActionResult Index()
         {
 
-            var games = _gameService.GetAll().Select(game => new GameIndexViewModel 
+            var games = _gameService.GetAll().Select(game => new HomeIndexViewModel 
             {
-                BestSeller = game.BestSeller,
-                DateOfLaunch = _gameService.GetDateOfLaunch(game.ID),
-                Description  = game.Description,
                 ImageUrl = game.ImageUrl, 
                 ID = game.ID,
-                Pegi = game.Pegi,
                 Platform = game.Platform,
                 Price = game.Price,
                 Producent = game.Producent,
-                Title = game.Title,
-                Type = game.Type
+                Title = game.Title
             });
 
             var model = new HomeIndexModel

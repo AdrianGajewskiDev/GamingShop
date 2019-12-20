@@ -1,0 +1,40 @@
+﻿@model GamingShop.Web.Models.GameDetailModel
+
+<div class="detail-container">
+    <div class="img-container-detail">
+        <img src=@Model.Game.ImageUrl>
+    </div>
+    <div class="details">
+        <div class="details-container">
+            <div class="detail-item">
+                <h1>@Model.Game.Title</h1>
+            </div>
+            <div class="detail-item">
+                <h3 class="detail-name">Producent:</h3>
+                <h3 class="detail-info">@Model.Game.Producent</h3>
+            </div>
+            <div class="detail-item">
+                <h3 class="detail-name">Type:</h3>
+                <h3 class="detail-info">@Model.Game.Type</h3>
+            </div>
+            <div class="detail-item">
+                <h3 class="detail-name">Platform:</h3>
+                <h3 class="detail-info">@Model.Game.Platform</h3>
+            </div>
+            <div class="detail-item">
+                <h3 class="detail-name">Pegi:</h3>
+                <h3 class="detail-info">@Model.Game.Pegi</h3>
+            </div>
+            <div class="detail-item">
+                <h3 class="detail-name">Date of launch:</h3>
+                <h3 class="detail-info">@Model.Game.LaunchDate</h3>
+            </div>
+            <div class="detail-item-actions">
+                <div class="detail-btn">
+                    <button>Buy</button>
+                </div>
+                <h3 class="detail-price">@Model.Game.Price$</h3>
+            </div>
+        </div>
+    </div>
+</div>
