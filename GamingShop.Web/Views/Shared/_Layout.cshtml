@@ -13,14 +13,15 @@
 <body>
     <header>
         <nav id="navbar">
-            <div class="search-box-container">
-                    @using (Html.BeginForm("Search", "Home", FormMethod.Post))
-                    {
-                        <input class="search-box" type="text" name="searchBar" placeholder="Search..."  />
-                        <button type="submit" class="btn-search"><i class="fas  fa-search "></i></button>
-                    }
+            <form class="search-box-container" asp-controller="Home" asp-action="Search" method="post">
+                <input class="search-box" type="text" name="searchBar" placeholder="Search..." />
+                <button type="submit" class="btn-search"><i class="fas  fa-search "></i></button>
 
-                            </div>
+            </form>
+            @using Microsoft.AspNetCore.Identity
+            @using GamingShop.Data.Models
+            @inject SignInManager<ApplicationUser> SignInManager
+
             <div class="nav-links-container">
                 <ul class="nav-links">
                     <li class="nav-link a-1"><a asp-controller="Home" asp-action="Index">Home</a></li>
@@ -30,9 +31,24 @@
                         <ul class="nav-link-submenu">
                             <li class="nav-link-submenu-item"><a>My account</a><i class="fas fa-user-circle"></i></li>
                             <li class="nav-link-submenu-item"><a>Cart</a><i class="fas fa-shopping-cart"></i></li>
-                            <li class="nav-link-submenu-item"><a>
-    <partial name="_LoginPartial" />
-</a><i class="fas fa-sign-out-alt"></i></li>
+                            @if (SignInManager.IsSignedIn(User))
+                            {
+                                <li class="nav-link-submenu-item">
+                                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                        <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+                                    </form>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-link-submenu-item">
+                                    <a asp-area="Identity" asp-page="/Account/Register">Register</a>
+                                </li>
+                                <li class="nav-link-submenu-item">
+                                    <a asp-area="Identity" asp-page="/Account/Login">Login</a>
+                                </li>
+                            }
+
                         </ul>
                     </li>
                 </ul>
@@ -42,10 +58,10 @@
         </nav>
 
     </header>
-        <partial name="_CookieConsentPartial" />
-        <main id="main-page">
-            @RenderBody()
-        </main>
+    <partial name="_CookieConsentPartial" />
+    <main id="main-page">
+        @RenderBody()
+    </main>
 
     <footer class="border-top footer text-muted">
         <div class="container">

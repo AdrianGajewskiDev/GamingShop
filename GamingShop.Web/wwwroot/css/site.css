@@ -99,7 +99,7 @@ body {
     flex-direction: column;
     text-align: left;
     top: 10%;
-    height: 30vh;
+    height: 40vh;
     width: 15%;
     list-style: none;
     background-color: var(--second-background-color);
