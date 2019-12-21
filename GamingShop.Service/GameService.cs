@@ -27,6 +27,15 @@ namespace GamingShop.Service
             return _dbContext.Games.Where(x => x.Platform.ToLower() == p);
         }
 
+        public IEnumerable<Game> GetAllBySearchQuery(string searchQuery)
+        {
+            var query = searchQuery.ToLower();
+
+            IEnumerable<Game> result = GetAll().Where(x => x.Title.ToLower().Contains(query) | x.Platform.ToLower().Contains(query) | x.Producent.ToLower().Contains(query));
+
+            return result;
+        }
+
         public IEnumerable<Game> GetAllByType(string type)
         {
             var t = type.ToLower();

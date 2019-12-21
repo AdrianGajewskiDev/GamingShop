@@ -7,6 +7,7 @@ namespace GamingShop.Service
     {
         IEnumerable<Game> GetAll();
         IEnumerable<Game> GetAllByPlatform(string platform);
+        IEnumerable<Game> GetAllBySearchQuery(string searchQuery);
         IEnumerable<Game> GetAllByType(string type);
         Game GetByID(int id);
         Game GetByTitle(string title);

@@ -5,6 +5,6 @@ namespace GamingShop.Web.Models
 {
     public class HomeIndexModel
     {
-        public IEnumerable<HomeIndexViewModel> Games { get; set; }
+        public IEnumerable<GameIndexViewModel> Games { get; set; }
     }
 }

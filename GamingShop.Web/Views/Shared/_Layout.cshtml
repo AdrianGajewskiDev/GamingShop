@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - GamingShop.Web</title>
@@ -13,9 +14,13 @@
     <header>
         <nav id="navbar">
             <div class="search-box-container">
-                <input class="search-box" type="text" placeholder="Search..."></input>
-                <button class="btn-search"><i class="fas  fa-search "></i></button>
-            </div>
+                    @using (Html.BeginForm("Search", "Home", FormMethod.Post))
+                    {
+                        <input class="search-box" type="text" name="searchBar" placeholder="Search..."  />
+                        <button type="submit" class="btn-search"><i class="fas  fa-search "></i></button>
+                    }
+
+                            </div>
             <div class="nav-links-container">
                 <ul class="nav-links">
                     <li class="nav-link a-1"><a asp-controller="Home" asp-action="Index">Home</a></li>

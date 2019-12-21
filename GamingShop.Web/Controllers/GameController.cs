@@ -42,5 +42,25 @@ namespace GamingShop.Web.Controllers
 
             return View(model);
         }
+
+        public IActionResult FilteredGames(string searchQuery)
+        {
+            var games = _gameService.GetAllBySearchQuery(searchQuery).Select(game => new GameIndexViewModel
+            {
+                ImageUrl = game.ImageUrl,
+                ID = game.ID,
+                Platform = game.Platform,
+                Price = game.Price,
+                Producent = game.Producent,
+                Title = game.Title
+            });
+
+            var model = new HomeIndexModel
+            {
+                Games = games
+            };
+
+            return View(model);
+        }
     }
 }

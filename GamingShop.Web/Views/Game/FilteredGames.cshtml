@@ -1,0 +1,34 @@
+﻿ @model GamingShop.Web.Models.HomeIndexModel
+
+<div class="cart-container">
+
+    @if (!Model.Games.Any())
+    {
+        <h1>Sorry, we couldn't find anything, please try type something else</h1>
+    }
+
+
+    @foreach (var game in Model.Games)
+    {
+        <div class="cart">
+            <div class="img-container">
+                <a asp-controller="Game" asp-action="Details" asp-route-id=@game.ID>
+                    <img class="img-thumbnail" src=@game.ImageUrl>
+
+                </a>
+
+            </div>
+            <div class="cart-details">
+                <h3 class="cart-detail">@game.Title</h3>
+                <h4 class="cart-detail"> @game.Producent</h4>
+                <h4 class="cart-detail"> @game.Platform</h4>
+            </div>
+            <div class="cart-actions">
+                <button class="btn-buy">Buy</button>
+                <h1 class="price">@game.Price$</h1>
+            </div>
+        </div>
+    }
+
+
+</div>

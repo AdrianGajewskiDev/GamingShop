@@ -71,3 +71,4 @@ C:\Users\adria\Projects\GamingShop\GamingShop.Web\bin\Debug\netcoreapp2.2\Gaming
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\bin\Debug\netcoreapp2.2\GamingShop.Service.dll
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\bin\Debug\netcoreapp2.2\GamingShop.Service.pdb
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\Razor\Views\Game\Details.cshtml.g.cs
+C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\Razor\Views\Game\FilteredGames.cshtml.g.cs

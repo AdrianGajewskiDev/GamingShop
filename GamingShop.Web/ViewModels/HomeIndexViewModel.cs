@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace GamingShop.Web.ViewModels
 {
-    public class HomeIndexViewModel
+    public class GameIndexViewModel
     {
         public int ID { get; set; }
         public decimal Price { get; set; }
