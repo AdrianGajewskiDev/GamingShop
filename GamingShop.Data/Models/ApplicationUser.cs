@@ -2,7 +2,7 @@
 
 namespace GamingShop.Data.Models
 {
-    public class ApplicationUser : IdentityUser<int>
+    public class ApplicationUser : IdentityUser
     {
         public int CartID { get; set; }
     }
