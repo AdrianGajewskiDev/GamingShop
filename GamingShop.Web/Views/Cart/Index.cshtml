@@ -11,7 +11,7 @@
                 <h3><a href="#">@game.Title</a></h3>
                 <h2> @game.Platform</h2>
                 <h2>@game.Producent</h2>
-                <button>Remove</button>
+                <button><a asp-action="RemoveFromCart" asp-controller="Cart" asp-route-id=@game.ID >Remove</a></button>
             </div>
         </div>
     }
