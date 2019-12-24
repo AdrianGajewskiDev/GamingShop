@@ -1,0 +1,22 @@
+﻿@model GamingShop.Web.Models.CartIndexModel
+
+<h1>Total Price: @Model.TotalPrice </h1>
+
+@if (Model.Games.Any())
+{
+    foreach (var game in Model.Games)
+    {
+        <div class="koszyk-container">
+            <div class="koszyk-item">
+                <h3><a href="#">@game.Title</a></h3>
+                <h2> @game.Platform</h2>
+                <h2>@game.Producent</h2>
+                <button>Remove</button>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <h1>Your cart is empty, why not add <a asp-action="Index" asp-controller="Home">something </a>? </h1>
+}

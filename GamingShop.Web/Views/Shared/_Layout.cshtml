@@ -21,39 +21,52 @@
             @using Microsoft.AspNetCore.Identity
             @using GamingShop.Data.Models
             @inject SignInManager<ApplicationUser> SignInManager
+           @inject UserManager<ApplicationUser> _userManager
 
-            <div class="nav-links-container">
-                <ul class="nav-links">
-                    <li class="nav-link a-1"><a asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li class="nav-link"><a href="#">Categories</a></li>
-                    <li class="nav-link showSubMenu">
-                        <a href="#">My Profile</a>
-                        <ul class="nav-link-submenu">
-                            <li class="nav-link-submenu-item"><a>My account</a><i class="fas fa-user-circle"></i></li>
-                            <li class="nav-link-submenu-item"><a>Cart</a><i class="fas fa-shopping-cart"></i></li>
-                            @if (SignInManager.IsSignedIn(User))
-                            {
+                <div class="nav-links-container">
+                    <ul class="nav-links">
+                        <li class="nav-link a-1"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li class="nav-link"><a href="#">Categories</a></li>
+                        <li class="nav-link showSubMenu">
+                            <a href="#">My Profile</a>
+                            <ul class="nav-link-submenu">
+                                <li class="nav-link-submenu-item"><a>My account</a><i class="fas fa-user-circle"></i></li>
                                 <li class="nav-link-submenu-item">
-                                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                                        <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-                                    </form>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="nav-link-submenu-item">
-                                    <a asp-area="Identity" asp-page="/Account/Register">Register</a>
-                                </li>
-                                <li class="nav-link-submenu-item">
-                                    <a asp-area="Identity" asp-page="/Account/Login">Login</a>
-                                </li>
-                            }
+                                    @if (SignInManager.IsSignedIn(User))
+                                    {
+                                        var user = await _userManager.GetUserAsync(User);
 
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            <div class="hamburger-menu"><i class="fas fa-bars"></i></div>
+
+                                        <a asp-action="Index" asp-controller="Cart" asp-route-id=@user.CartID> Cart</a><i class="fas fa-shopping-cart"></i>
+                                    }
+                                    else
+                                    {
+                                        <a  asp-area="Identity" asp-page="/Account/Login"> Cart</a><i class="fas fa-shopping-cart"></i>
+                                    }
+                                </li>
+                                @if (SignInManager.IsSignedIn(User))
+                                {
+                                    <li class="nav-link-submenu-item">
+                                        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                            <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+                                        </form>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="nav-link-submenu-item">
+                                        <a asp-area="Identity" asp-page="/Account/Register">Register</a>
+                                    </li>
+                                    <li class="nav-link-submenu-item">
+                                        <a asp-area="Identity" asp-page="/Account/Login">Login</a>
+                                    </li>
+                                }
+
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="hamburger-menu"><i class="fas fa-bars"></i></div>
 
         </nav>
 
@@ -63,9 +76,9 @@
         @RenderBody()
     </main>
 
-    <footer class="border-top footer text-muted">
+    <footer id="footer">
         <div class="container">
-            &copy; 2019 - GamingShop.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; Adrian Gajewski <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 

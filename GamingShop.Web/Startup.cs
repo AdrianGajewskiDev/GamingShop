@@ -32,6 +32,8 @@ namespace GamingShop.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
@@ -41,6 +43,7 @@ namespace GamingShop.Web
 
 
             services.AddScoped<IGame, GameService>();
+            services.AddScoped<ICart, CartService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
