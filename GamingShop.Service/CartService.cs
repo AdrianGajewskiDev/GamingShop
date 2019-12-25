@@ -50,14 +50,14 @@ namespace GamingShop.Service
             return games;
         }
 
-        public async void RemoveFormCart(int id, Game item)
+        public void RemoveFormCart(int id, Game item)
         {
             var cart = GetById(id);
 
             var cartItem = _dbContext.CartItems.Where(x => x.CartID == cart.ID).FirstOrDefault();
 
             _dbContext.CartItems.Remove(cartItem);
-            await _dbContext.SaveChangesAsync();
+            _dbContext.SaveChanges();
         }
     }
 }

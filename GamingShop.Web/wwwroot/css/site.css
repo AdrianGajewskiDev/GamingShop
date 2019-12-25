@@ -328,6 +328,60 @@ body {
         overflow-x: hidden;
     }
 
+    .basket-item {
+        width: 100%;
+        height: 20vh;
+        display: block;
+        border: 2px solid var(--main-background-color);
+        margin-bottom: 10px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .basket-game {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        margin-bottom: 5px;
+        border-bottom: 2px solid var(--main-background-color);
+    }
+
+    .basket-game-title {
+        width: 100%;
+        font-size: 1.7rem;
+    }
+
+        .basket-game-title a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+    .basket-game-platform {
+        width: 100%;
+        font-size: 1.5rem;
+    }
+
+    .basket-game-producent {
+        width: 100%;
+        font-size: 1.5rem;
+    }
+
+    .basket-game-btn {
+        border-right: none !important;
+        width: 100%;
+        font-size: 1.5rem;
+    }
+
+        .basket-game-btn a {
+            width: 50%;
+            height: 50%;
+            background-color: var(--main-background-color);
+            border-radius: 25px;
+            text-align: center;
+            color: var(--second-background-color);
+            text-decoration: none;
+        }
+
     .details-container h3 {
         font-size: 1.2rem;
     }
@@ -633,43 +687,67 @@ body {
     border-bottom: none !important;
 }
 /* Login */
-.koszyk-container {
+/*Basket*/
+.basket-container {
     display: block;
-}
-
-.koszyk-item {
-    display: flex;
-    margin-top: 10px;
-    align-items: center;
-    width: 100%;
-    height: 10vh;
-    border: 2px solid grey;
+    height: 100%;
     background-color: var(--second-background-color);
 }
 
-    .koszyk-item h3 {
-        font-size: 2rem;
-        margin-right: 100px;
-        margin-left: 50px;
+.basket-item {
+    width: 100%;
+    height: 10vh;
+    display: flex;
+    border: 2px solid var(--main-background-color);
+    margin-bottom: 10px;
+    transition: all 0.3s ease-in-out;
+}
+
+    .basket-item:hover {
+        background-color: grey;
     }
 
-        .koszyk-item h3 a {
-            text-decoration: none;
-            color: white;
-        }
-
-.koszyk-item {
+.basket-game {
+    border-right: 2px solid var(--main-background-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     color: white;
 }
 
-    .koszyk-item h2 {
-        margin-left: 50px;
+.basket-game-title {
+    width: 30%;
+    font-size: 1.7rem;
+}
+
+    .basket-game-title a {
+        text-decoration: none;
+        color: inherit;
     }
 
-    .koszyk-item button {
+.basket-game-platform {
+    width: 20%;
+    font-size: 1.5rem;
+}
+
+.basket-game-producent {
+    width: 20%;
+    font-size: 1.5rem;
+}
+
+.basket-game-btn {
+    border-right: none !important;
+    width: 30%;
+    font-size: 1.5rem;
+}
+
+    .basket-game-btn a {
+        width: 50%;
+        height: 50%;
+        background-color: var(--main-background-color);
         border-radius: 25px;
-        border-style: none;
-        width: 10vw;
-        height: 3vh;
-        margin-left: 50px;
+        text-align: center;
+        color: var(--second-background-color);
+        text-decoration: none;
     }
+/*Basket*/

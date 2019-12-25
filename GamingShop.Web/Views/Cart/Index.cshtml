@@ -4,17 +4,28 @@
 
 @if (Model.Games.Any())
 {
-    foreach (var game in Model.Games)
-    {
-        <div class="koszyk-container">
-            <div class="koszyk-item">
-                <h3><a href="#">@game.Title</a></h3>
-                <h2> @game.Platform</h2>
-                <h2>@game.Producent</h2>
-                <button><a asp-action="RemoveFromCart" asp-controller="Cart" asp-route-id=@game.ID >Remove</a></button>
+    <div class="basket-container">
+
+        @foreach (var game in Model.Games)
+        {
+        <div class="basket-item">
+            <div class="basket-game basket-game-title">
+                <a asp-action="Details" asp-controller="Game" asp-route-id=@game.ID>@game.Title</a>
+            </div>
+            <div class="basket-game basket-game-platform">
+                <h3>@game.Platform</h3>
+            </div>
+            <div class="basket-game basket-game-producent">
+                <h3>@game.Producent</h3>
+            </div>
+            <div class="basket-game basket-game-btn">
+                <a asp-action="RemoveFromCart" asp-controller="Cart" asp-route-id=@game.ID>Remove</a>
             </div>
         </div>
-    }
+
+        }
+    </div>
+
 }
 else
 {
