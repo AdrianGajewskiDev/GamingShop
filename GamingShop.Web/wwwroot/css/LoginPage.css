@@ -1,0 +1,78 @@
+﻿/* Login */
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: var(--second-background-color);
+}
+
+.login-form {
+    height: 60%;
+    background-color: var(--main-background-color);
+    border-radius: 50px;
+}
+
+.form {
+    padding: 30px;
+    height: 100%;
+    width: 100%;
+}
+
+    .form h4 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    height: 5vh;
+    border-bottom: 2px solid var(--second-background-color);
+}
+
+    .form-group input {
+        width: 100%;
+        font-size: 1.4rem;
+        height: 80%;
+        background-color: transparent;
+        border-style: none;
+    }
+
+.checkbox {
+    display: flex;
+    width: 100%;
+}
+
+.form-group label {
+    width: 90%;
+}
+
+.checkbox-input {
+    width: 40%;
+    height: 100%;
+}
+
+.form-group button {
+    margin-left: 60px;
+    width: 60%;
+    height: 80%;
+    border-radius: 30px;
+    border-style: none;
+    background-color: var(--second-background-color);
+}
+
+.register-btn {
+    text-align: center;
+    color: white;
+    padding-left: 60px;
+    margin-bottom: 10px;
+}
+
+.form-btn {
+    border-bottom: none !important;
+}
+/* Login */

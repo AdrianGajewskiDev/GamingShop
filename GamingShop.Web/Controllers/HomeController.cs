@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -18,16 +16,17 @@ namespace GamingShop.Web.Controllers
         private readonly IGame _gameService;
         private readonly ICart _cartService;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IApplicationUser _userService;
 
 
         public HomeController(IGame game, ICart cart, 
-            SignInManager<ApplicationUser> manager, UserManager<ApplicationUser> userManager)
+            SignInManager<ApplicationUser> manager, UserManager<ApplicationUser> userManager,
+            IApplicationUser user)
         {
             _gameService = game;
             _cartService = cart;
             _signInManager = manager;
-            _userManager = userManager;
+            _userService = user;
         }
 
         public IActionResult Index()
@@ -67,8 +66,9 @@ namespace GamingShop.Web.Controllers
         {
             if (_signInManager.IsSignedIn(User))
             {
-                var user = await _userManager.GetUserAsync(User);
+                var user = await _userService.GetUser(User);
                 var item = _gameService.GetByID(game);
+
                 _cartService.AddToCart(user.CartID, item);
 
                 return RedirectToAction("Index");

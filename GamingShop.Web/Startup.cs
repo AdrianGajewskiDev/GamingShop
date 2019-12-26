@@ -44,6 +44,7 @@ namespace GamingShop.Web
 
             services.AddScoped<IGame, GameService>();
             services.AddScoped<ICart, CartService>();
+            services.AddScoped<IApplicationUser, ApplicationUserService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

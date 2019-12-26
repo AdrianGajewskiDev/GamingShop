@@ -18,10 +18,11 @@
                 <button type="submit" class="btn-search"><i class="fas  fa-search "></i></button>
 
             </form>
-            @using Microsoft.AspNetCore.Identity
+            @using GamingShop.Service
             @using GamingShop.Data.Models
+            @using Microsoft.AspNetCore.Identity
             @inject SignInManager<ApplicationUser> SignInManager
-           @inject UserManager<ApplicationUser> _userManager
+            @inject IApplicationUser  _userService;
 
                 <div class="nav-links-container">
                     <ul class="nav-links">
@@ -34,7 +35,7 @@
                                 <li class="nav-link-submenu-item">
                                     @if (SignInManager.IsSignedIn(User))
                                     {
-                                        var user = await _userManager.GetUserAsync(User);
+                                        var user = await _userService.GetUser(User);
 
 
                                         <a asp-action="Index" asp-controller="Cart" asp-route-id=@user.CartID> Cart</a><i class="fas fa-shopping-cart"></i>
@@ -79,7 +80,7 @@
     <footer id="footer">
         <div class="container">
             &copy; Adrian Gajewski <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+        </div> 
     </footer>
 
     <environment include="Development">

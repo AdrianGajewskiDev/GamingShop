@@ -1,4 +1,7 @@
 ﻿@import url("https://fonts.googleapis.com/css?family=Montserrat&display=swap");
+@import url(LoginPage.css);
+@import url(Basket.css);
+@import url(GameDetails.css);
 
 :root {
     --main-background-color: #fbeaeb;
@@ -209,6 +212,15 @@ body {
 }
 /* Game cart ends here */
 
+
+.display {
+    transform: translateX(0%);
+}
+
+.display-flex {
+    display: flex;
+}
+
 /* Media queries */
 @media only screen and (max-width: 1355px) {
     .nav-link {
@@ -389,6 +401,7 @@ body {
     .details-container h1 {
         font-size: 1.3rem;
     }
+
     #navbar {
         flex-direction: row;
         height: 15vh;
@@ -497,257 +510,3 @@ body {
     }
 }
 
-.display {
-    transform: translateX(0%);
-}
-
-.display-flex {
-    display: flex;
-}
-
-
-
-#footer {
-    margin-top: -100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 5rem;
-    background-color: var(--second-background-color);
-}
-
-/* Game Details starts here */
-
-.detail-container {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    grid-template-areas: "image detail";
-    height: 100%;
-}
-
-.img-container-detail {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-    .img-container-detail img {
-        width: 80%;
-        height: 90%;
-        max-width: 100%;
-        max-height: 100%;
-    }
-
-.details-container {
-    width: 80%;
-    height: 80%;
-    margin-top: 5%;
-}
-
-.details {
-    width: 100%;
-    height: 100%;
-}
-
-.detail-item {
-    display: flex;
-    width: 100%;
-    height: 10%;
-    margin-top: 2%;
-    border-bottom: 5px solid var(--second-background-color);
-}
-
-.detail-name {
-    width: 60%;
-    display: flex;
-    align-items: center;
-    font-size: 1.5rem;
-}
-
-.detail-info {
-    width: 40%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    font-size: 1.5rem;
-}
-
-.detail-item h1 {
-    text-align: center;
-}
-
-.detail-item-actions {
-    display: flex;
-    width: 100%;
-    height: 20%;
-    margin-top: 5%;
-}
-
-.detail-btn {
-    display: flex;
-    align-items: center;
-    width: 60%;
-}
-
-    .detail-btn button {
-        width: 70%;
-        height: 60%;
-        border-radius: 50px;
-        border-style: none;
-        background-color: var(--second-background-color);
-        font-size: 2rem;
-        color: var(--main-background-color);
-    }
-
-.detail-price {
-    width: 40%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 3rem;
-}
-/* Game Details ends here */
-
-/* Login */
-
-.login-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    background-color: var(--second-background-color);
-}
-
-.login-form {
-    height: 60%;
-    background-color: var(--main-background-color);
-    border-radius: 50px;
-}
-
-.form {
-    padding: 30px;
-    height: 100%;
-    width: 100%;
-}
-
-    .form h4 {
-        font-size: 1.5rem;
-        text-align: center;
-    }
-
-.form-group {
-    display: flex;
-    align-items: center;
-    margin-top: 10px;
-    height: 5vh;
-    border-bottom: 2px solid var(--second-background-color);
-}
-
-    .form-group input {
-        width: 100%;
-        font-size: 1.4rem;
-        height: 80%;
-        background-color: transparent;
-        border-style: none;
-    }
-
-.checkbox {
-    display: flex;
-    width: 100%;
-}
-
-.form-group label {
-    width: 90%;
-}
-
-.checkbox-input {
-    width: 40%;
-    height: 100%;
-}
-
-.form-group button {
-    margin-left: 60px;
-    width: 60%;
-    height: 80%;
-    border-radius: 30px;
-    border-style: none;
-    background-color: var(--second-background-color);
-}
-
-.register-btn{
-    text-align: center;
-    color: white;
-    padding-left: 60px;
-    margin-bottom: 10px;
-}
-
-.form-btn{
-    border-bottom: none !important;
-}
-/* Login */
-/*Basket*/
-.basket-container {
-    display: block;
-    height: 100%;
-    background-color: var(--second-background-color);
-}
-
-.basket-item {
-    width: 100%;
-    height: 10vh;
-    display: flex;
-    border: 2px solid var(--main-background-color);
-    margin-bottom: 10px;
-    transition: all 0.3s ease-in-out;
-}
-
-    .basket-item:hover {
-        background-color: grey;
-    }
-
-.basket-game {
-    border-right: 2px solid var(--main-background-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-}
-
-.basket-game-title {
-    width: 30%;
-    font-size: 1.7rem;
-}
-
-    .basket-game-title a {
-        text-decoration: none;
-        color: inherit;
-    }
-
-.basket-game-platform {
-    width: 20%;
-    font-size: 1.5rem;
-}
-
-.basket-game-producent {
-    width: 20%;
-    font-size: 1.5rem;
-}
-
-.basket-game-btn {
-    border-right: none !important;
-    width: 30%;
-    font-size: 1.5rem;
-}
-
-    .basket-game-btn a {
-        width: 50%;
-        height: 50%;
-        background-color: var(--main-background-color);
-        border-radius: 25px;
-        text-align: center;
-        color: var(--second-background-color);
-        text-decoration: none;
-    }
-/*Basket*/
