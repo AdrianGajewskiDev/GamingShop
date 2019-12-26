@@ -61,6 +61,8 @@ namespace GamingShop.Web.Areas.Identity.Pages.Account
             [Display(Name = "Password")]
             public string Password { get; set; }
 
+            public string PhoneNumber { get; set; }
+
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
@@ -77,7 +79,7 @@ namespace GamingShop.Web.Areas.Identity.Pages.Account
             returnUrl = returnUrl ?? Url.Content("~/");
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.UserName, Email = Input.Email };
+                var user = new ApplicationUser { UserName = Input.UserName, Email = Input.Email, PhoneNumber = Input.PhoneNumber };
                 var cart = _dbContext.Carts.Add(new Cart());
                 await _dbContext.SaveChangesAsync();
                 user.CartID = cart.Entity.ID;
