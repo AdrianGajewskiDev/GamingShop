@@ -77,3 +77,4 @@ C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\Razor\
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\Razor\Areas\Identity\Pages\_ValidationScriptsPartial.cshtml.g.cs
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\Razor\Areas\Identity\Pages\_ViewImports.cshtml.g.cs
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\Razor\Views\Cart\Index.cshtml.g.cs
+C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\Razor\Views\Account\Index.cshtml.g.cs

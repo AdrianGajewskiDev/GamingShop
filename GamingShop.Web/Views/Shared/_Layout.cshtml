@@ -31,7 +31,7 @@
                         <li class="nav-link showSubMenu">
                             <a href="#">My Profile</a>
                             <ul class="nav-link-submenu">
-                                <li class="nav-link-submenu-item"><a>My account</a><i class="fas fa-user-circle"></i></li>
+                                <li class="nav-link-submenu-item"><a asp-action="Index" asp-controller="Account">My account</a><i class="fas fa-user-circle"></i></li>
                                 <li class="nav-link-submenu-item">
                                     @if (SignInManager.IsSignedIn(User))
                                     {
