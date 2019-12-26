@@ -17,23 +17,29 @@ namespace GamingShop.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var user = await _userService.GetUser(User);
-
-            var userModel = new UserIndexViewModel
+            if (_userService.IsSignedIn(User))
             {
-                ID = user.Id,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                UserName = user.UserName,
-                CartId = user.CartID
-            };
+                var user = await _userService.GetUser(User);
 
-            var model = new AccountIndexModel
-            {
-                User = userModel
-            };
+                var userModel = new UserIndexViewModel
+                {
+                    ID = user.Id,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    UserName = user.UserName,
+                    CartId = user.CartID
+                };
 
-            return View(model);
+                var model = new AccountIndexModel
+                {
+                    User = userModel
+                };
+
+                return View(model);
+            }
+            else
+                return Redirect("https://localhost:44367/Identity/Account/Login");
+
         }
     }
 }

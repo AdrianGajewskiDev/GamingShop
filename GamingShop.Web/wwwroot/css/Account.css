@@ -1,0 +1,202 @@
+﻿
+.account-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-template-areas: "img details";
+    height: 90vh;
+    background-color: var(--second-background-color);
+}
+
+.account-img {
+    display: flex;
+    justify-content: center;
+}
+
+    .account-img img {
+        height: 50%;
+        width: 70%;
+        margin-top: 25%;
+    }
+
+.account-details {
+    display: block;
+    padding-top: 12.5%;
+}
+
+.account-details-item {
+    display: flex;
+    width: 90%;
+    height: 10vh;
+    margin-top: 10px;
+    border: 2px solid var(--main-background-color);
+}
+
+.center-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.text-left {
+    justify-content: flex-start !important;
+    margin-left: 5px;
+}
+
+.account-details-item-title {
+    width: 30%;
+}
+
+.account-details-item-value {
+    width: 40%;
+    background-color: transparent;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.account-details-item-btn {
+    width: 30%;
+}
+
+.account-details-item button {
+    width: 150px;
+    height: 50%;
+    margin-left: 50px;
+    margin-top: 20px;
+    border-radius: 25px;
+    border-style: none;
+    font-size: 1.3rem;
+}
+
+.account-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30%;
+    height: 10vh;
+    padding-top: 20px;
+}
+
+    .account-btn a {
+        font-size: 2.5rem;
+        width: 100%;
+        height: 100%;
+        background-color: var(--main-background-color);
+        text-align: center;
+        border-radius: 25px;
+        text-decoration: none;
+        color: var(--second-background-color);
+    }
+
+.btns-container {
+    display: flex;
+    width: 90%;
+    height: 10vh;
+}
+
+.btn-item {
+    display: flex;
+    width: 50%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+    .btn-item a {
+        height: 50%;
+        width: 60%;
+        font-size: 1.5rem;
+        background-color: var(--main-background-color);
+        border-radius: 25px;
+        text-decoration: none;
+    }
+
+#save-btn {
+    visibility: hidden;
+}
+
+    #save-btn a {
+        background-color: green !important;
+    }
+
+.show-save-btn {
+    visibility: visible !important;
+}
+
+@media only screen and (max-width: 768px) {
+    .account-container {
+        display: block;
+        height: 100%;
+        background-color: var(--second-background-color);
+    }
+
+    .account-details {
+        padding-left: 10%;
+        background-color: var(--second-background-color);
+        display: block;
+    }
+
+    .account-img img {
+        height: 50%;
+        width: 70%;
+        margin-top: 10%;
+    }
+
+    .account-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40%;
+        height: 10vh;
+        padding-top: 20px;
+    }
+}
+
+@media only screen and (max-width: 360px) {
+    .account-details-item-title {
+        width: 100%;
+    }
+
+    .account-details-item-value {
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .account-details-item-btn {
+        width: 100%;
+    }
+
+    .account-details-item {
+        display: flex;
+        flex-direction: column;
+        width: 90%;
+        height: 20vh;
+        margin-top: 20px;
+        border: 2px solid var(--main-background-color);
+    }
+
+    .text-left {
+        justify-content: center !important;
+        margin-left: 5px;
+    }
+
+    .account-details-item-btn {
+        margin-top: 20px;
+        width: 30%;
+    }
+
+    .account-details-item button {
+        width: 150px;
+        height: 20%;
+        margin-left: 70px;
+        margin-top: 20px;
+        border-radius: 25px;
+        border-style: none;
+        font-size: 1.3rem;
+    }
+
+    .email {
+        font-size: 20px !important;
+    }
+}

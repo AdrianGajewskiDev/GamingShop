@@ -2,6 +2,7 @@
 @import url(LoginPage.css);
 @import url(Basket.css);
 @import url(GameDetails.css);
+@import url(Account.css);
 
 :root {
     --main-background-color: #fbeaeb;

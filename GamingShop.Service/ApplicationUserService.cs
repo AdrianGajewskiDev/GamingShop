@@ -9,13 +9,17 @@ namespace GamingShop.Service
     public class ApplicationUserService : IApplicationUser
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _dbContext;
 
         public ApplicationUserService(UserManager<ApplicationUser> userManager,
-                                      ApplicationDbContext context)
+                                      ApplicationDbContext context,
+                                      SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _dbContext = context;
+            _signInManager = signInManager;
+
         }
 
         public async Task<ApplicationUser> GetUser(ClaimsPrincipal claims)
@@ -28,6 +32,11 @@ namespace GamingShop.Service
         public string GetUserID(ClaimsPrincipal claims)
         {
             return _userManager.GetUserId(claims);
+        }
+
+        public bool IsSignedIn(ClaimsPrincipal claims)
+        {
+            return _signInManager.IsSignedIn(claims);
         }
 
         public void UpdateUserData(ref ApplicationUser user, ApplicationUser newData)

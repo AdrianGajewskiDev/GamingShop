@@ -18,3 +18,31 @@ btn.addEventListener("click", () => {
 showSubMenuBtn.addEventListener("click", () => {
     submenu.classList.toggle("display-submenu");
 });
+
+const emailInput = document.getElementById("email-text");
+const userNameInput = document.getElementById("username-text");
+const phoneInput = document.getElementById("phone-text");
+
+const emailbtn = document.getElementById("btn-email");
+const usernamebtn = document.getElementById("btn-username");
+const phonebtn = document.getElementById("btn-phone");
+
+const saveBtn = document.getElementById("save-btn");
+
+emailbtn.addEventListener("click", () => {
+    emailInput.focus();
+    emailInput.scrollIntoView();
+    saveBtn.classList.toggle("show-save-btn");
+});
+
+usernamebtn.addEventListener("click", () => {
+    userNameInput.focus();
+    userNameInput.scrollIntoView();
+    saveBtn.classList.toggle("show-save-btn");
+});
+
+phonebtn.addEventListener("click", () => {
+    phoneInput.focus();
+    phoneInput.scrollIntoView();
+    saveBtn.classList.toggle("show-save-btn");
+});
