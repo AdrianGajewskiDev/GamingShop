@@ -31,6 +31,12 @@ namespace GamingShop.Service
         {
             var query = searchQuery.ToLower();
 
+            if (query == "xbox one" || query == "xboxone")
+            {
+                query = "Xbox_One";
+                return GetAll().Where(x => x.Title.ToLower().Contains(query) | x.Platform.Contains(query) | x.Producent.ToLower().Contains(query));
+            }
+
             IEnumerable<Game> result = GetAll().Where(x => x.Title.ToLower().Contains(query) | x.Platform.ToLower().Contains(query) | x.Producent.ToLower().Contains(query));
 
             return result;
