@@ -39,13 +39,31 @@ namespace GamingShop.Service
             return _signInManager.IsSignedIn(claims);
         }
 
-        public void UpdateUserData(ref ApplicationUser user, ApplicationUser newData)
+        public async void UpdateEmail(ClaimsPrincipal user, string newemail)
         {
-            user.Email = newData.Email;
-            user.PhoneNumber = newData.PhoneNumber;
-            user.UserName = newData.UserName;
+            var currentUser = await GetUser(user);
+
+            currentUser.Email = newemail;
+
             _dbContext.SaveChanges();
         }
 
+        public async void UpdatePhoneNumber(ClaimsPrincipal user, string newPhoneNumber)
+        {
+            var currentUser = await GetUser(user);
+
+            currentUser.PhoneNumber = newPhoneNumber;
+
+            _dbContext.SaveChanges();
+        }
+
+        public async void UpdateUsername(ClaimsPrincipal user, string newUsername)
+        {
+            var currentUser = await GetUser(user);
+
+            currentUser.UserName = newUsername;
+
+            _dbContext.SaveChanges();
+        }
     }
 }

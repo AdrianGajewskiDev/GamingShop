@@ -5,25 +5,29 @@
         <img src="~/images/user.png">
     </div>
     <div class="account-details">
-        <div class="account-details-item">
-            <h2 class="center-text text-left account-details-item-title">UserName:</h2>
-            <input id="username-text" class="center-text account-details-item-value" value=@Model.User.UserName>
-            <button id="btn-username" class="account-details-item-btn" type="submit">Edit</button>
-        </div>
-        <div class="account-details-item">
-            <h2 class="center-text text-left account-details-item-title">Email:</h2>
-            <input id="email-text" class="center-text account-details-item-value email" value=@Model.User.Email/>
-            <button id="btn-email" class="account-details-item-btn" type="submit">Edit</button>
-        </div>
-        <div class="account-details-item">
-            <h2 class="center-text text-left account-details-item-title">Phone number:</h2>
-            <input id="phone-text" class="center-text account-details-item-value" value=@Model.User.PhoneNumber>
-            <button id="btn-phone" class="account-details-item-btn" type="submit">Edit</button>
-        </div>
-        <div class="btns-container">
-            <div class="btn-item"><a asp-action="Index" asp-controller="Cart" asp-route-id=@Model.User.CartId>Go To Cart</a></div>
-            <div id="save-btn" class="btn-item"><a href="#">Save Changes</a></div>
-        </div>
+        <form asp-action="UpdateUserProfile" asp-controller="Account" method="post">
+
+            <div class="account-details-item">
+                <h2 class="center-text text-left account-details-item-title">UserName:</h2>
+                <input name="username" id="username-text" readonly="readonly" class="center-text account-details-item-value" asp-for="User.UserName" value=@Model.User.UserName>
+                <a id="btn-username" class="account-details-item-btn" >Edit</a>
+            </div>
+            <div class="account-details-item">
+                <h2 class="center-text text-left account-details-item-title">Email:</h2>
+                <input name="email" readonly="readonly" id="email-text" class="center-text account-details-item-value email" asp-for="User.Email" value=@Model.User.Email />
+                <a id="btn-email" class="account-details-item-btn" >Edit</a>
+            </div>
+            <div class="account-details-item">
+                <h2 class="center-text text-left account-details-item-title">Phone number:</h2>
+                <input name="phonenumber" readonly="readonly" id="phone-text" class="center-text account-details-item-value" asp-for="User.PhoneNumber" value=@Model.User.PhoneNumber>
+                <a id="btn-phone" class="account-details-item-btn" >Edit</a>
+            </div>
+            <div class="btns-container">
+                <div class="btn-item"><a asp-action="Index" asp-controller="Cart" asp-route-id=@Model.User.CartId>Go To Cart</a></div>
+                <div id="save-btn" class="btn-item"><button type="submit">Save Changes</button></div>
+            </div>
+        </form>
+
     </div>
 
 </div>

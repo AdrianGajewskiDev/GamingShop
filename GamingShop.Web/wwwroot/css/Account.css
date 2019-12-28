@@ -58,7 +58,8 @@
     width: 30%;
 }
 
-.account-details-item button {
+.account-details-item a {
+    background-color: var(--main-background-color);
     width: 150px;
     height: 50%;
     margin-left: 50px;
@@ -186,7 +187,7 @@
         width: 30%;
     }
 
-    .account-details-item button {
+    .account-details-item a {
         width: 150px;
         height: 20%;
         margin-left: 70px;

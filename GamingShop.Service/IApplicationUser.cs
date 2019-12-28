@@ -8,7 +8,9 @@ namespace GamingShop.Service
     {
         Task<ApplicationUser> GetUser(ClaimsPrincipal claims);
         string GetUserID(ClaimsPrincipal claims);
-        void UpdateUserData(ref ApplicationUser user, ApplicationUser newData);
+        void UpdateUsername(ClaimsPrincipal user, string newUsername);
+        void UpdateEmail(ClaimsPrincipal user,string newemailrname);
+        void UpdatePhoneNumber(ClaimsPrincipal user, string newPhoneNumber);
         bool IsSignedIn(ClaimsPrincipal claims);
     }
 }
