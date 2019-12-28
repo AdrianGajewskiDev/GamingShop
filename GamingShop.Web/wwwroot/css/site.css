@@ -215,11 +215,11 @@ body {
 
 
 .display {
-    transform: translateX(0%);
+    transform: translateX(0%) !important;
 }
 
 .display-flex {
-    display: flex;
+    display: flex !important;
 }
 
 /* Media queries */

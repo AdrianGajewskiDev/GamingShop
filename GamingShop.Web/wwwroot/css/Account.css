@@ -55,6 +55,7 @@
 }
 
 .account-details-item-btn {
+    text-align: center;
     width: 30%;
 }
 
@@ -102,6 +103,14 @@
     align-items: center;
     justify-content: center;
     text-align: center;
+}
+.btn-item button{
+    width: 50%;
+    height: 50%;
+    border-radius: 25px;
+    background-color: forestgreen;
+    border-style: none;
+    font-size: 1.3rem;
 }
 
     .btn-item a {
@@ -199,5 +208,25 @@
 
     .email {
         font-size: 20px !important;
+    }
+
+    .btn-item button {
+        width: 70%;
+        height: 50%;
+        border-radius: 25px;
+        background-color: forestgreen;
+        border-style: none;
+        font-size: 0.8rem;
+    }
+
+
+    .btn-item a {
+        padding-top: 10px;
+        height: 50%;
+        width: 70%;
+        font-size: 0.8rem;
+        background-color: var(--main-background-color);
+        border-radius: 25px;
+        text-decoration: none;
     }
 }

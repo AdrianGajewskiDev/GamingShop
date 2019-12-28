@@ -16,6 +16,7 @@ const phonebtn = document.getElementById("btn-phone");
 const saveBtn = document.getElementById("save-btn");
 
 btn.addEventListener("click", () => {
+    console.log("works");
     menu.classList.toggle("display");
     container.classList.toggle("display-flex");
     console.log("w");
