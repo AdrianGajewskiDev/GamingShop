@@ -27,11 +27,11 @@ namespace GamingShop.Service
                 client.EnableSsl = true;
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
                 client.UseDefaultCredentials = false;
-                client.Credentials = new NetworkCredential(EmailCredentials.Email,EmailCredentials.Password);
+                client.Credentials = new NetworkCredential(EmailCredentials.GetEmail(),EmailCredentials.GetPassword());
 
                 MailMessage msg = new MailMessage();
                 msg.To.Add(toEmail);
-                msg.From = new MailAddress(EmailCredentials.Email);
+                msg.From = new MailAddress(EmailCredentials.GetEmail());
                 msg.Subject = subject;
                 msg.Body = htmlMessage;
 
