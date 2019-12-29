@@ -223,7 +223,7 @@ _pkginfo.txt
 !?*.[Cc]ache/
 
 # Others
-GamingShop\GamingShop.Data\MyData
+*GamingShop\GamingShop.Data\MyData
 ClientBin/
 ~$*
 *~
