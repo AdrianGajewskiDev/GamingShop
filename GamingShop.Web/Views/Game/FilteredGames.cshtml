@@ -24,7 +24,7 @@
                 <h4 class="cart-detail"> @game.Platform</h4>
             </div>
             <div class="cart-actions">
-                <button class="btn-buy">Buy</button>
+                <button class="btn-buy"><a asp-action="AddToCart" asp-controller="Home" asp-route-game=@game.ID>Buy</a></button>
                 <h1 class="price">@game.Price$</h1>
             </div>
         </div>
