@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using GamingShop.Data.Models;
 using GamingShop.Web.Data;
@@ -20,6 +21,11 @@ namespace GamingShop.Service
             _dbContext = context;
             _signInManager = signInManager;
 
+        }
+
+        public ApplicationUser GetByID(string ID)
+        {
+            return _dbContext.Users.Where(user => user.Id == ID).FirstOrDefault();
         }
 
         public async Task<ApplicationUser> GetUser(ClaimsPrincipal claims)

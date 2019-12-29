@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace GamingShop.Web.Controllers
@@ -46,6 +47,15 @@ namespace GamingShop.Web.Controllers
             else
                 return Redirect("https://localhost:44367/Identity/Account/Login");
 
+        }
+
+        public async Task<IActionResult> ConfirmEmail(string userID)
+        {
+            var user = _userService.GetByID(userID);
+
+            user.EmailConfirmed = true;
+
+            return RedirectToAction("Index");
         }
 
 

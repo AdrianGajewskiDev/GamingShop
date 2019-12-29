@@ -125,6 +125,14 @@
       "frameworks": {
         "netcoreapp2.2": {
           "dependencies": {
+            "MailKit": {
+              "target": "Package",
+              "version": "[2.4.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.UI": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
             "Microsoft.NETCore.App": {
               "suppressParent": "All",
               "target": "Package",

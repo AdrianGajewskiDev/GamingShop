@@ -7,6 +7,7 @@ namespace GamingShop.Service
     public interface IApplicationUser
     {
         Task<ApplicationUser> GetUser(ClaimsPrincipal claims);
+        ApplicationUser GetByID(string ID);
         string GetUserID(ClaimsPrincipal claims);
         void UpdateUsername(ClaimsPrincipal user, string newUsername);
         void UpdateEmail(ClaimsPrincipal user,string newemailrname);

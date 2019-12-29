@@ -10,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using GamingShop.Service;
 using GamingShop.Data.Models;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace GamingShop.Web
 {
@@ -45,6 +48,7 @@ namespace GamingShop.Web
             services.AddScoped<IGame, GameService>();
             services.AddScoped<ICart, CartService>();
             services.AddScoped<IApplicationUser, ApplicationUserService>();
+            services.AddScoped<IEmailSender, EmailSender>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
