@@ -22,7 +22,7 @@ namespace GamingShop.Web.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGetAsync(string userId, string code)
         {
-            if (userId == null || code == null)
+            if (userId == null)
             {
                 return RedirectToPage("/Index");
             }
@@ -33,11 +33,9 @@ namespace GamingShop.Web.Areas.Identity.Pages.Account
                 return NotFound($"Unable to load user with ID '{userId}'.");
             }
 
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-            if (!result.Succeeded)
-            {
-                throw new InvalidOperationException($"Error confirming email for user with ID '{userId}':");
-            }
+            user.EmailConfirmed = true;
+
+            await _userManager.UpdateAsync(user);
 
             return Page();
         }
