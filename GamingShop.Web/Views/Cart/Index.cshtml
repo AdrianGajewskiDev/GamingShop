@@ -4,10 +4,10 @@
 
 @if (Model.Games.Any())
 {
-    <div class="basket-container">
+<div class="basket-container">
 
-        @foreach (var game in Model.Games)
-        {
+    @foreach (var game in Model.Games)
+    {
         <div class="basket-item">
             <div class="basket-game basket-game-title">
                 <a asp-action="Details" asp-controller="Game" asp-route-id=@game.ID>@game.Title</a>
@@ -23,9 +23,12 @@
             </div>
         </div>
 
-        }
+    }
+    <div class="order-btn">
+        <a asp-action="Index" asp-controller="Order" asp-route-cartID=@Model.CartID>Place Order</a>
     </div>
-
+</div>
+   
 }
 else
 {

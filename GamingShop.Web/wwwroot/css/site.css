@@ -128,6 +128,9 @@ body {
         color: var(--main-background-color);
         font-size: 1.1rem;
     }
+.fa-sign-out-alt{
+    margin-left: 90px;
+}
 
 .display-submenu {
     display: flex;
@@ -197,14 +200,38 @@ body {
     align-items: center;
 }
 
-.btn-buy {
-    width: 60%;
-    height: 50%;
-    border-style: none;
-    border-radius: 50px;
-    margin-left: 5px;
-    background-color: var(--main-background-color);
+.order-btn{
+    margin-left: 5vw;
+    margin-top: 5vh;
+    width: 40%;
+    height: 10vh;
 }
+    .order-btn a:hover{
+        background-color: white;
+        color: blue;
+    }
+
+    .order-btn a {
+        cursor: pointer;
+        width: 100%;
+        padding: 15px;
+        background-color: red;
+        border-radius: 25px;
+        font-size: 2rem;
+        color: white;
+        background-color: transparent;
+        border: 2px solid white;
+        transition: .3s ease-in-out;
+    }
+
+    .btn-buy {
+        width: 60%;
+        height: 50%;
+        border-style: none;
+        border-radius: 50px;
+        margin-left: 5px;
+        background-color: var(--main-background-color);
+    }
 
 .price {
     width: 40%;
@@ -222,9 +249,18 @@ body {
     display: flex !important;
 }
 
-/* Media queries */
-@media only screen and (max-width: 1355px) {
-    .nav-link {
+.btn-logout{
+    font-size: 1.5rem;
+    border-style: none;
+    background-color: transparent;
+    color: white;
+    cursor: pointer;
+
+}
+
+    /* Media queries */
+    @media only screen and (max-width: 1355px) {
+        .nav-link {
         font-size: 1.5rem;
         margin-right: 100px;
     }

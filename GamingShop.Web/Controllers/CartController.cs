@@ -37,7 +37,8 @@ namespace GamingShop.Web.Controllers
             var model = new CartIndexModel
             {
                 Games = games,
-                TotalPrice = CalculateTotalPrice(games)
+                TotalPrice = CalculateTotalPrice(games),
+                CartID = id
             };
 
 

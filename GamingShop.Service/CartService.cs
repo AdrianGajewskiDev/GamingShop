@@ -3,6 +3,7 @@ using GamingShop.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GamingShop.Service
 {
@@ -28,6 +29,20 @@ namespace GamingShop.Service
 
             _dbContext.SaveChanges();
 
+        }
+
+        public async Task ClearCart(int id)
+        {
+            var cart = GetById(id);
+
+            var cartItems = _dbContext.CartItems.Where(x => x.CartID == cart.ID);
+
+            foreach (var item in cartItems)
+            {
+                _dbContext.CartItems.Remove(item);
+
+            }
+            await _dbContext.SaveChangesAsync();
         }
 
         public Cart GetById(int id)

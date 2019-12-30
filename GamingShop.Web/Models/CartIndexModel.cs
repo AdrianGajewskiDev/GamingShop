@@ -7,5 +7,6 @@ namespace GamingShop.Web.Models
     {
         public IEnumerable<GameIndexViewModel> Games { get; set; }
         public decimal TotalPrice { get; set; }
+        public int CartID;
     }
 }

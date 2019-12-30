@@ -47,7 +47,8 @@
                                 {
                                     <li class="nav-link-submenu-item">
                                         <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                                            <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+                                            <button type="submit" class="btn-logout">Logout</button>
+                                            <i class="fas fa-sign-out-alt"></i>
                                         </form>
                                     </li>
                                 }
