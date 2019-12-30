@@ -3,6 +3,7 @@
 @import url(Basket.css);
 @import url(GameDetails.css);
 @import url(Account.css);
+@import url(Order.css);
 
 :root {
     --main-background-color: #fbeaeb;

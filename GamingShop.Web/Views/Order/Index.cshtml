@@ -1,10 +1,12 @@
 ﻿@model GamingShop.Web.Models.OrderIndexModel
 
-    <form asp-action="PlaceOrder" method="post">
-        <input asp-for="City" />
-        <input asp-for="Country" />
-        <input asp-for="Email" />
-        <input asp-for="PhoneNumber" />
-        <input asp-for="Street" />
+<div class="order-form-container">
+    <form class="order-form" asp-action="PlaceOrder" method="post">
+        <input placeholder="City" asp-for="City" />
+        <input placeholder="Country" asp-for="Country" />
+        <input placeholder="Email" asp-for="Email" />
+        <input placeholder="Phone number" asp-for="PhoneNumber" />
+        <input placeholder="Street" asp-for="Street" />
         <button type="submit">Submit</button>
     </form>
+</div>   
