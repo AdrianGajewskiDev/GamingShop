@@ -47,13 +47,14 @@ namespace GamingShop.Service
             }
         }
 
-        public async Task SendOrderDetailsEmail(string toEmail, string subject, IEnumerable<Game> items, Address adress)
+        public async Task SendOrderDetailsEmail(string toEmail, string subject, IEnumerable<Game> items, Address adress, decimal price)
         {
             string Body = System.IO.File.ReadAllText(@"C:\Users\adria\Projects\GamingShop\GamingShop.Service\EmailTemplates\OrderEmailTemplate.html");
             Body = Body.Replace("#Country#",adress.Country);
             Body = Body.Replace("#City#", adress.City);
             Body = Body.Replace("#Street#", adress.Street);
             Body = Body.Replace("#PhoneNumber#", adress.PhoneNumber);
+            Body = Body.Replace("#price#", price.ToString());
 
             try
             {
