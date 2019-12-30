@@ -47,7 +47,6 @@ namespace GamingShop.Web.Controllers
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber,
                 Street = model.Street,
-                UserID = int.Parse(user.Id)
             });
 
             await _emailSender.SendOrderDetailsEmail(model.Email, "Order", model.Games, new Address {Street = model.Street, City = model.City, Country = model.Country, PhoneNumber = model.PhoneNumber });

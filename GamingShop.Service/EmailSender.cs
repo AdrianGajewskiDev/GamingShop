@@ -6,6 +6,7 @@ using System.Net;
 using GamingShop.Data.MyData;
 using System.Collections.Generic;
 using GamingShop.Data.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace GamingShop.Service
 {
@@ -48,6 +49,12 @@ namespace GamingShop.Service
 
         public async Task SendOrderDetailsEmail(string toEmail, string subject, IEnumerable<Game> items, Address adress)
         {
+            string Body = System.IO.File.ReadAllText(@"C:\Users\adria\Projects\GamingShop\GamingShop.Service\EmailTemplates\OrderEmailTemplate.html");
+            Body = Body.Replace("#Country#",adress.Country);
+            Body = Body.Replace("#City#", adress.City);
+            Body = Body.Replace("#Street#", adress.Street);
+            Body = Body.Replace("#PhoneNumber#", adress.PhoneNumber);
+
             try
             {
                 SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
@@ -57,21 +64,11 @@ namespace GamingShop.Service
                 client.Credentials = new NetworkCredential(EmailCredentials.GetEmail(), EmailCredentials.GetPassword());
 
                 MailMessage msg = new MailMessage();
+                msg.IsBodyHtml = true;
                 msg.To.Add(toEmail);
                 msg.From = new MailAddress(EmailCredentials.GetEmail());
                 msg.Subject = subject;
-
-                var msgBody = "You bought: ";
-
-                foreach (var item in items)
-                {
-                    msgBody += item.Title + "/n";
-                }
-
-                
-                msg.Body = $"{msgBody}" + "/n" +
-                            $"Your adress: {adress.Country}" + $"/{adress.City}" + $"/{adress.Street}";
-
+                msg.Body = Body;
                 client.Send(msg);
 
             }
