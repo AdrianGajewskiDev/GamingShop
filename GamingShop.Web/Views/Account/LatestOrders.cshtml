@@ -1,0 +1,18 @@
+﻿@model GamingShop.Web.Models.AccountLatestOrdersModel
+
+@if (Model.Orders.Any())
+{
+    foreach (var order in Model.Orders)
+    {
+        <div style="display: flex">
+            <h1>@order.TotalPrice</h1>
+            <h1>@order.Country / @order.City / @order.Street</h1>
+            <h1>@order.Placed</h1>
+        </div>
+     
+    }
+}
+else
+{
+    <h1>You haven't ordered anything yet :( </h1>
+}

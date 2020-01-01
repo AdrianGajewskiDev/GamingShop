@@ -4,14 +4,16 @@ using GamingShop.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GamingShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200101111935_Added a date time var to order model class")]
+    partial class Addedadatetimevartoordermodelclass
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,8 +118,6 @@ namespace GamingShop.Data.Migrations
 
                     b.Property<string>("MonthOfLaunch");
 
-                    b.Property<int?>("OrderID");
-
                     b.Property<int>("Pegi");
 
                     b.Property<string>("Platform");
@@ -133,8 +133,6 @@ namespace GamingShop.Data.Migrations
                     b.Property<string>("YearOfLaunch");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("OrderID");
 
                     b.ToTable("Games");
                 });
@@ -280,13 +278,6 @@ namespace GamingShop.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("GamingShop.Data.Models.Game", b =>
-                {
-                    b.HasOne("GamingShop.Data.Models.Order")
-                        .WithMany("Games")
-                        .HasForeignKey("OrderID");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

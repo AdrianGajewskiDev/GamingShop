@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -14,11 +15,13 @@ namespace GamingShop.Web.Controllers
     public class AccountController : Controller
     {
         private readonly IApplicationUser _userService;
+        private readonly IOrder _orderService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public AccountController(IApplicationUser userService, UserManager<ApplicationUser> userManager)
+        public AccountController(IApplicationUser userService, UserManager<ApplicationUser> userManager, IOrder orderService)
         {
             _userService = userService;
+            _orderService = orderService;
             _userManager = userManager;
         }
 
@@ -117,6 +120,30 @@ namespace GamingShop.Web.Controllers
             }
             return View();
 
+        }
+
+        public IActionResult LatestOrders(int cartID)
+        {
+            var orders = _orderService.GetAllByCartID(cartID).Select(order => new OrderIndexModel 
+            {
+                CartID = order.CartID,
+                City = order.City,
+                Country = order.Country,
+                Email = order.Email,
+                Games = order.Games,
+                PhoneNumber = order.PhoneNumber,
+                Street = order.Street,
+                TotalPrice = order.TotalPrice,
+                UserID = order.UserID,
+                Placed = order.Placed
+            });
+
+            var model = new AccountLatestOrdersModel 
+            {
+                Orders = orders
+            };
+
+            return View(model);
         }
 
         private bool IsPhoneNumberDiffrent(string phonenumber)

@@ -1,4 +1,7 @@
-﻿namespace GamingShop.Data.Models
+﻿using System;
+using System.Collections.Generic;
+
+namespace GamingShop.Data.Models
 {
     public class Order
     {
@@ -11,6 +14,9 @@
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public decimal TotalPrice { get; set; }
+        public DateTime Placed { get; set; }
+
+        public IEnumerable<Game> Games { get; set; }
 
     }
 }

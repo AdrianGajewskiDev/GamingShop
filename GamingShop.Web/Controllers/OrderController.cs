@@ -4,6 +4,7 @@ using GamingShop.Web.Data;
 using GamingShop.Web.Models;
 using GamingShop.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,12 +51,11 @@ namespace GamingShop.Web.Controllers
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber,
                 Street = model.Street,
-                TotalPrice = model.TotalPrice
+                TotalPrice = model.TotalPrice,
+                Placed = DateTime.Now,
             });
 
             await _emailSender.SendOrderDetailsEmail(model.Email, "Order", model.Games, new Address { Street = model.Street, City = model.City, Country = model.Country, PhoneNumber = model.PhoneNumber }, model.TotalPrice);
-
-            //TODO: Add this to some kind of users stats/latest orders
 
             await _cartService.ClearCart(model.CartID);
 

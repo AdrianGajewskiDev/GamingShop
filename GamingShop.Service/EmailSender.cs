@@ -1,26 +1,15 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System;
 using System.Net.Mail;
 using System.Net;
 using GamingShop.Data.MyData;
 using System.Collections.Generic;
 using GamingShop.Data.Models;
-using Microsoft.AspNetCore.Http;
 
 namespace GamingShop.Service
 {
     public class EmailSender : IEmailSender
     {
-
-        private readonly IHostingEnvironment _env;
-
-        public EmailSender(IHostingEnvironment env)
-        {
-
-            _env = env;
-        }
-
         public async Task SendEmailAsync(string toEmail, string subject, string htmlMessage)
         {
             try
@@ -55,7 +44,6 @@ namespace GamingShop.Service
             Body = Body.Replace("#Street#", adress.Street);
             Body = Body.Replace("#PhoneNumber#", adress.PhoneNumber);
             Body = Body.Replace("#price#", price.ToString());
-
             try
             {
                 SmtpClient client = new SmtpClient("smtp.gmail.com", 587);

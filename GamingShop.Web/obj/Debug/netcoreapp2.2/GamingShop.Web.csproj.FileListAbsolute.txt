@@ -81,3 +81,4 @@ C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\Razor\
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\Razor\Areas\Identity\Pages\Account\ConfirmEmail.cshtml.g.cs
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\Razor\Views\Shared\_LoginPartial.cshtml.g.cs
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\Razor\Views\Order\Index.cshtml.g.cs
+C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\Razor\Views\Account\LatestOrders.cshtml.g.cs

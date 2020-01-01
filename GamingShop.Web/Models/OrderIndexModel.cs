@@ -1,5 +1,6 @@
 ﻿using GamingShop.Data.Models;
 using GamingShop.Web.ViewModels;
+using System;
 using System.Collections.Generic;
 
 namespace GamingShop.Web.Models
@@ -16,5 +17,6 @@ namespace GamingShop.Web.Models
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public decimal TotalPrice { get; set; }
+        public DateTime Placed { get; set; }
     }
 }

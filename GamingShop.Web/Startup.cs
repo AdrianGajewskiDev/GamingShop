@@ -49,6 +49,7 @@ namespace GamingShop.Web
             services.AddScoped<ICart, CartService>();
             services.AddScoped<IApplicationUser, ApplicationUserService>();
             services.AddScoped<GamingShop.Service.IEmailSender, EmailSender>();
+            services.AddScoped<IOrder, OrderService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
