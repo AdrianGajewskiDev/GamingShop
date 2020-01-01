@@ -134,7 +134,72 @@
     visibility: visible !important;
 }
 
+
+.latest-orders-container {
+    padding: 20px;
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.latest-orders-item {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 40vh;
+    border-radius: 25px;
+    background-color: var(--second-background-color);
+    color: white;
+}
+
+.latest-orders-details {
+    height: 100%;
+}
+
+.order-details-item {
+    height: 5vh;
+    width: 100%;
+    margin-bottom: 10px;
+    border-bottom: 2px solid white;
+    display: flex;
+}
+
+.order-details-title {
+    width: 50%;
+    display: flex;
+}
+
+.order-details-content {
+    width: 50%;
+    display: flex;
+}
+
+.latestOrders-btn {
+    height: 5vh;
+    display: flex;
+    justify-content: center;
+}
+
+    .latestOrders-btn a {
+        text-align: center;
+        width: 60%;
+        background-color: white;
+        color: black;
+        border-radius: 25px;
+        text-decoration: none;
+        padding-top: 5px;
+    }
+
+
 @media only screen and (max-width: 768px) {
+
+    .latest-orders-container {
+        padding: 20px;
+        display: grid;
+        grid-gap: 20px;
+        grid-template-columns: repeat(2, 1fr);
+    }
     .account-container {
         display: block;
         height: 100%;
@@ -166,6 +231,12 @@
 @media only screen and (max-width: 360px) {
     .account-details-item-title {
         width: 100%;
+    }
+    .latest-orders-container {
+        padding: 20px;
+        display: grid;
+        grid-gap: 20px;
+        grid-template-columns: 1fr;
     }
 
     .account-details-item-value {

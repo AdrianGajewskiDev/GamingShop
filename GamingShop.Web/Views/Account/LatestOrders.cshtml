@@ -2,29 +2,40 @@
 
 @if (Model.Orders.Any())
 {
-    foreach (var order in Model.Orders)
-    {
-        <div style="display: flex">
-            <h1>@order.TotalPrice</h1>
-            <h1>@order.Country / @order.City / @order.Street</h1>
-            <h1>@order.Placed</h1>
-        </div>
-        if (order.Games.Any())
-        {
-            <ul>
-                @foreach (var item in order.Games)
-                {
-                    <li>@item.Title</li>
+    <div class="latest-orders-container">
 
-                }
-            </ul>
-        }
-        else
+        @foreach (var order in Model.Orders)
         {
-            <h1>Dupa</h1>
-        }
+            <div class="latest-orders-item">
+                <div class="latest-orders-details">
+                    <div class="order-details-item">
+                        <h3 class="order-details-title">Total Price: </h3>
+                        <h3 class="order-details-content">@order.TotalPrice$ </h3>
+                    </div>
+                    <div class="order-details-item">
+                        <h3 class="order-details-title">Placed: </h3>
+                        <h3 class="order-details-content">@order.Placed </h3>
+                    </div>
+                    <div class="order-details-item">
+                        <h3 class="order-details-title">Country:</h3>
+                        <h3 class="order-details-content">@order.Country</h3>
+                    </div>
+                    <div class="order-details-item">
+                        <h3 class="order-details-title">City:</h3>
+                        <h3 class="order-details-content">@order.City</h3>
+                    </div>
+                    <div class="order-details-item">
+                        <h3 class="order-details-title">Street:</h3>
+                        <h3 class="order-details-content">@order.Street</h3>
+                    </div>
+                </div>
+                <div class="latestOrders-btn">
+                    <a href="#">View ordered items</a>
+                </div>
 
-    }
+            </div>
+        }
+    </div>
 }
 else
 {
