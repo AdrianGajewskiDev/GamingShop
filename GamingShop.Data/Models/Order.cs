@@ -18,5 +18,6 @@ namespace GamingShop.Data.Models
 
         public IEnumerable<Game> Games { get; set; }
 
+        
     }
 }

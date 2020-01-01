@@ -9,7 +9,21 @@
             <h1>@order.Country / @order.City / @order.Street</h1>
             <h1>@order.Placed</h1>
         </div>
-     
+        if (order.Games.Any())
+        {
+            <ul>
+                @foreach (var item in order.Games)
+                {
+                    <li>@item.Title</li>
+
+                }
+            </ul>
+        }
+        else
+        {
+            <h1>Dupa</h1>
+        }
+
     }
 }
 else

@@ -4,10 +4,7 @@ using GamingShop.Web.Models;
 using GamingShop.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
-using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace GamingShop.Web.Controllers
@@ -30,6 +27,7 @@ namespace GamingShop.Web.Controllers
             if (_userService.IsSignedIn(User))
             {
                 var user = await _userService.GetUser(User);
+                
 
                 var userModel = new UserIndexViewModel
                 {
@@ -37,7 +35,7 @@ namespace GamingShop.Web.Controllers
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
                     UserName = user.UserName,
-                    CartId = user.CartID
+                    CartId = user.CartID,
                 };
 
                 var model = new AccountIndexModel
@@ -129,14 +127,16 @@ namespace GamingShop.Web.Controllers
                 CartID = order.CartID,
                 City = order.City,
                 Country = order.Country,
+                ID = order.ID,
                 Email = order.Email,
-                Games = order.Games,
+                Games = _orderService.GetGamesFromOrder(order.ID),
                 PhoneNumber = order.PhoneNumber,
                 Street = order.Street,
                 TotalPrice = order.TotalPrice,
                 UserID = order.UserID,
                 Placed = order.Placed
             });
+
 
             var model = new AccountLatestOrdersModel 
             {

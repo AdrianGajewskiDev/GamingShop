@@ -38,12 +38,15 @@ namespace GamingShop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> PlaceOrder(OrderIndexModel model)
         {
+
             var user = await _userService.GetUser(User);
             model.Games = _cartService.GetGames(user.CartID).ToList();
 
             model.CartID = user.CartID;
             model.TotalPrice = CalculateTotalPrice(model.Games);
-            _dbContext.Orders.Add(new GamingShop.Data.Models.Order
+
+
+            var result = await _dbContext.Orders.AddAsync(new Order
             {
                 CartID = model.CartID,
                 City = model.City,
@@ -54,6 +57,22 @@ namespace GamingShop.Web.Controllers
                 TotalPrice = model.TotalPrice,
                 Placed = DateTime.Now,
             });
+
+            await _dbContext.SaveChangesAsync();
+
+            var orderID = _dbContext.Orders.Last().ID;
+
+            foreach (var item in model.Games)
+            {
+                _dbContext.OrderItems.Add(new OrderItem
+                {
+                    GameID = item.ID,
+                    CartID = user.CartID,
+                    OrderID = orderID
+                });
+            }
+
+            
 
             await _emailSender.SendOrderDetailsEmail(model.Email, "Order", model.Games, new Address { Street = model.Street, City = model.City, Country = model.Country, PhoneNumber = model.PhoneNumber }, model.TotalPrice);
 
