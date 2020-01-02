@@ -56,6 +56,7 @@ namespace GamingShop.Web.Controllers
 
             user.EmailConfirmed = true;
 
+
             return RedirectToAction("Index");
         }
 
@@ -146,9 +147,31 @@ namespace GamingShop.Web.Controllers
             return View(model);
         }
 
+        public IActionResult OrderItemsDetails(int id)
+        {
+            var games = _orderService.GetGamesFromOrder(id).Select(game => new GameIndexViewModel
+            {
+                Title = game.Title,
+                Platform = game.Platform,
+                Price  = game.Price,
+                Producent = game.Producent,
+                ID = game.ID
+            });
+
+            var model = new HomeIndexModel
+            {
+                Games = games
+            };
+
+            return View(model);
+        }
+
+
+        #region Helper Methods
+
         private bool IsPhoneNumberDiffrent(string phonenumber)
         {
-            var user =  _userService.GetUser(User);
+            var user = _userService.GetUser(User);
 
             if (user.Result.PhoneNumber == phonenumber)
                 return false;
@@ -174,6 +197,7 @@ namespace GamingShop.Web.Controllers
                 return false;
 
             return true;
-        }
+        } 
+        #endregion
     }
 }
