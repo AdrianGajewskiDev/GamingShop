@@ -4,6 +4,7 @@
 @import url(GameDetails.css);
 @import url(Account.css);
 @import url(Order.css);
+@import url(Categories.css);
 
 :root {
     --main-background-color: #fbeaeb;
