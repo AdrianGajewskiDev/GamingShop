@@ -42,7 +42,7 @@ namespace GamingShop.Web.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc();
+            app.UseMvc().UseCors(builder => builder.WithOrigins().AllowAnyHeader().AllowAnyMethod());
         }
     }
 }

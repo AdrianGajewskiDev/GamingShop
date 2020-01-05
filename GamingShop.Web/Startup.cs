@@ -43,6 +43,11 @@ namespace GamingShop.Web
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.Configure<IdentityOptions>(conf => 
+            {
+                conf.Password.RequiredLength = 6;
+                conf.Password.RequireNonAlphanumeric = false;
+            });
 
             services.AddScoped<IGame, GameService>();
             services.AddScoped<ICart, CartService>();
