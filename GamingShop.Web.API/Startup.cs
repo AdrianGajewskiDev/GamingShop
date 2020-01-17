@@ -49,7 +49,11 @@ namespace GamingShop.Web.API
                 app.UseDeveloperExceptionPage();
                 app.UseCors("DevCorsPolicy");
             }
-            app.UseMvc();
+
+            app.UseMvc(routes => routes.MapRoute(
+                name:"default",
+                template: "api/{controller}/{action}/{id?}"
+                ));
         }
     }
 }
