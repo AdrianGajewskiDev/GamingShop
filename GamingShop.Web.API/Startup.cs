@@ -21,16 +21,23 @@ namespace GamingShop.Web.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(setup => 
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(setup =>
             {
                 setup.UseMemberCasing();
             });
 
 
-            services.AddDbContext<ApplicationDbContext>(options => 
+            services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            services.AddCors(cors => cors.AddPolicy("DevCorsPolicy", options => 
+            {
+                options.AllowAnyOrigin();
+                options.AllowAnyMethod();
+                options.AllowAnyHeader();
+            }));
 
         }
 
@@ -40,9 +47,9 @@ namespace GamingShop.Web.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseCors("DevCorsPolicy");
             }
-
-            app.UseMvc().UseCors(builder => builder.WithOrigins().AllowAnyHeader().AllowAnyMethod());
+            app.UseMvc();
         }
     }
 }
