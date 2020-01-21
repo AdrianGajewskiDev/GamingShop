@@ -1,7 +1,9 @@
-﻿using GamingShop.Service;
+﻿using GamingShop.Data.Models;
+using GamingShop.Service;
 using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +28,15 @@ namespace GamingShop.Web.API
                 setup.UseMemberCasing();
             });
 
+            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddDefaultTokenProviders();
+
+            services.Configure<IdentityOptions>(conf =>
+            {
+                conf.Password.RequiredLength = 6;
+                conf.Password.RequireNonAlphanumeric = false;
+            });
+
 
             services.AddDbContext<ApplicationDbContext>(options =>
             {
@@ -39,7 +50,10 @@ namespace GamingShop.Web.API
                 options.AllowAnyHeader();
             }));
 
+            GamingShop.Web.Startup.SetUpServices(services);
         }
+
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GamingShop.Data.Models;
 using GamingShop.Web.Data;
+using GamingShop.Service;
 
 namespace GamingShop.Web.API.Controllers
 {
@@ -13,24 +14,38 @@ namespace GamingShop.Web.API.Controllers
     public class GamesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IGame _gamesService;
 
-        public GamesController(ApplicationDbContext context)
+        public GamesController(ApplicationDbContext context, IGame gameService)
         {
             _context = context;
+            _gamesService = gameService;
         }
 
         // GET: api/Games
-        [HttpGet]
+        [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<Game>>> GetGames()
         {
             return await _context.Games.ToListAsync();
         }
 
+
+        [HttpGet("Search/{searchQuery}")]
+        public async Task<ActionResult<IEnumerable<Game>>> GetBySearchQuery(string searchQuery)
+        {
+            if (searchQuery == string.Empty)
+                return NotFound();
+
+            var games = _gamesService.GetAllBySearchQuery(searchQuery).ToList();
+
+            return games;
+        }
+
         // GET: api/Games/5
-        [HttpGet("{id}")]
+        [HttpGet("GetGame/{id}")]
         public async Task<ActionResult<Game>> GetGame(int id)
         {
-            var game = await _context.Games.FindAsync(id);
+            var game = _gamesService.GetByID(id);
 
             if (game == null)
             {
@@ -70,8 +85,8 @@ namespace GamingShop.Web.API.Controllers
             return NoContent();
         }
 
-        // POST: api/Games
-        [HttpPost]
+        // POST: api/Games/AddGame
+        [HttpPost("AddGame")]
         public async Task<ActionResult<Game>> PostGame(Game game)
         {
             _context.Games.Add(game);
@@ -81,7 +96,7 @@ namespace GamingShop.Web.API.Controllers
         }
 
         // DELETE: api/Games/5
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteGame/{id}")]
         public async Task<ActionResult<Game>> DeleteGame(int id)
         {
             var game = await _context.Games.FindAsync(id);

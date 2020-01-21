@@ -23,7 +23,14 @@ namespace GamingShop.Web
             Configuration = configuration;
         }
 
-
+        public static void SetUpServices(IServiceCollection services)
+        {
+            services.AddScoped<IGame, GameService>();
+            services.AddScoped<ICart, CartService>();
+            services.AddScoped<IApplicationUser, ApplicationUserService>();
+            services.AddScoped<GamingShop.Service.IEmailSender, EmailSender>();
+            services.AddScoped<IOrder, OrderService>();
+        }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -49,11 +56,13 @@ namespace GamingShop.Web
                 conf.Password.RequireNonAlphanumeric = false;
             });
 
-            services.AddScoped<IGame, GameService>();
-            services.AddScoped<ICart, CartService>();
-            services.AddScoped<IApplicationUser, ApplicationUserService>();
-            services.AddScoped<GamingShop.Service.IEmailSender, EmailSender>();
-            services.AddScoped<IOrder, OrderService>();
+            SetUpServices(services);
+
+            //services.AddScoped<IGame, GameService>();
+            //services.AddScoped<ICart, CartService>();
+            //services.AddScoped<IApplicationUser, ApplicationUserService>();
+            //services.AddScoped<GamingShop.Service.IEmailSender, EmailSender>();
+            //services.AddScoped<IOrder, OrderService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
