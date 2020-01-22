@@ -8,10 +8,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace GamingShop.Web.API.Controllers
@@ -33,13 +31,14 @@ namespace GamingShop.Web.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<ApplicationUser>> RegisterUser(ApplicationUser user)
+        public async Task<ActionResult<ApplicationUser>> RegisterUser(RegisterModel registerModel)
         {
             var newUser = new ApplicationUser
             {
-                UserName = user.UserName,
-                Email = user.Email,
-                Password = user.Password
+                UserName = registerModel.Username,
+                Email = registerModel.Email,
+                PhoneNumber = registerModel.PhoneNumber,
+                Password = registerModel.Password
             };
 
             var result = await _userManager.CreateAsync(newUser, newUser.Password);
@@ -68,7 +67,7 @@ namespace GamingShop.Web.API.Controllers
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
-                        new Claim("UserID", user.Id)
+                        new Claim("UserID", user.Id.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddHours(5d),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret_Key)), SecurityAlgorithms.HmacSha256Signature)
