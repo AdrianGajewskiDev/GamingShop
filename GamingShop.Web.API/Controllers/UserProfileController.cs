@@ -1,4 +1,5 @@
 ﻿using GamingShop.Data.Models;
+using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +14,17 @@ namespace GamingShop.Web.API.Controllers
     public class UserProfileController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        public UserProfileController(UserManager<ApplicationUser> userManager)
+        private readonly ApplicationDbContext _dbContext;
+        public UserProfileController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
             _userManager = userManager;
+            _dbContext = context;
         }
 
 
         [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<Object> GetUserProfile()
+        public async Task<ActionResult<ApplicationUser>> GetUserProfile()
         {
             string userID = User.Claims.First(c => c.Type == "UserID").Value;
 
@@ -29,16 +32,69 @@ namespace GamingShop.Web.API.Controllers
 
             if (user != null)
             {
-                return new
-                {
-                    user.UserName,
-                    user.Email,
-                    user.PhoneNumber,
-                    user.Password
-                };
+                return user;
             }
             else
                 return BadRequest(new { message = "Cannot get user profile" });
+        }
+
+        [HttpPost("UpdateUsername/{username}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> UpdateUsername(string username)
+        {
+
+            string userID = User.Claims.First(c => c.Type == "UserID").Value;
+
+            var user = await _userManager.FindByIdAsync(userID);
+
+            user.UserName = username;
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                return new NoContentResult();
+            }
+
+            return new BadRequestResult();
+        }
+
+        [HttpPost("UpdateEmail/{email}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> UpdateEmail(string email)
+        {
+
+            string userID = User.Claims.First(c => c.Type == "UserID").Value;
+
+            var user = await _userManager.FindByIdAsync(userID);
+
+            user.Email = email;
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                return new NoContentResult();
+            }
+
+            return new BadRequestResult();
+        }
+        [HttpPost("UpdatePhoneNumber/{phoneNumber}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> UpdatePhoneNumber(string phoneNumber)
+        {
+
+            string userID = User.Claims.First(c => c.Type == "UserID").Value;
+
+            var user = await _userManager.FindByIdAsync(userID);
+
+            user.PhoneNumber = phoneNumber;
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                return new NoContentResult();
+            }
+
+            return new BadRequestResult();
         }
     }
 }
