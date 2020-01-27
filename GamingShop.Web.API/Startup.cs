@@ -58,6 +58,7 @@ namespace GamingShop.Web.API
             services.Configure<ApplicationOptions>(config => 
             {
                 config.Secret_Key = Configuration["JWT_Config:Secret_Key"].ToString();
+                config.ClientURL = Configuration["JWT_Config:ClientURL"];
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(setup =>

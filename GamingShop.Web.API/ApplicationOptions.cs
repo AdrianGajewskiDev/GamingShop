@@ -8,5 +8,6 @@ namespace GamingShop.Web.API
     public class ApplicationOptions
     {
         public string Secret_Key { get; set; }
+        public string ClientURL { get; set; }
     }
 }

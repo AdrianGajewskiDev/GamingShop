@@ -10,6 +10,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace GamingShop.Web.API.Controllers
@@ -41,14 +42,21 @@ namespace GamingShop.Web.API.Controllers
                 Password = registerModel.Password
             };
 
+            var callbackUrl = $"http://localhost:55367/api/UserProfile/ConfirmEmail/{newUser.Id}";
+
+
+
             var result = await _userManager.CreateAsync(newUser, newUser.Password);
             if (result.Succeeded)
             {
+
                 var cart = _dbContext.Carts.Add(new Cart());
                 await _dbContext.SaveChangesAsync();
 
                 newUser.CartID = cart.Entity.ID;
                 await _dbContext.SaveChangesAsync();
+                await _emailSender.SendEmailAsync(newUser.Email, "Confirmation Email",
+                        $"Please confirm your account by <a href='{callbackUrl}'>clicking here</a>.");
 
                 return newUser;
             }

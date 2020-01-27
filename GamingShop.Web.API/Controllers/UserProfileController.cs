@@ -3,8 +3,11 @@ using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace GamingShop.Web.API.Controllers
@@ -15,10 +18,12 @@ namespace GamingShop.Web.API.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
-        public UserProfileController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+        private ApplicationOptions _options;
+        public UserProfileController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, IOptions<ApplicationOptions> options)
         {
             _userManager = userManager;
             _dbContext = context;
+            _options = options.Value;
         }
 
 
@@ -95,6 +100,48 @@ namespace GamingShop.Web.API.Controllers
             }
 
             return new BadRequestResult();
+        }
+
+
+        [Route("ConfirmEmail/{userID}")]
+        public async Task<IActionResult> ConfirmEmail(string userID)
+        {
+            var user = await _userManager.FindByIdAsync(userID);
+
+            user.EmailConfirmed = true;
+
+            await _dbContext.SaveChangesAsync();
+
+            OpenUrl(_options.ClientURL + "/EmailConfirmation");
+            return new NoContentResult();
+        }
+
+        private void OpenUrl(string url)
+        {
+            try
+            {
+                Process.Start(url);
+            }
+            catch
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    url = url.Replace("&", "^&");
+                    Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process.Start("xdg-open", url);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process.Start("open", url);
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
     }
 }
