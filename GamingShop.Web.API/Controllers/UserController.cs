@@ -4,13 +4,6 @@ using GamingShop.Web.API.Models;
 using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace GamingShop.Web.API.Controllers
@@ -22,13 +15,13 @@ namespace GamingShop.Web.API.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly IEmailSender _emailSender;
-        private readonly ApplicationOptions _options;
-        public UserController(UserManager<ApplicationUser> service, ApplicationDbContext context, IEmailSender emailSender, IOptions<ApplicationOptions> options)
+        private readonly JWTToken _tokenWriter;
+        public UserController(UserManager<ApplicationUser> service, ApplicationDbContext context, IEmailSender emailSender, JWTToken tokenWriter)
         {
             _userManager = service;
             _dbContext = context;
             _emailSender = emailSender;
-            _options = options.Value;
+            _tokenWriter = tokenWriter;
         }
 
         [HttpPost("register")]
@@ -42,13 +35,13 @@ namespace GamingShop.Web.API.Controllers
                 Password = registerModel.Password
             };
 
-            var callbackUrl = $"http://localhost:55367/api/UserProfile/ConfirmEmail/{newUser.Id}";
-
-
-
             var result = await _userManager.CreateAsync(newUser, newUser.Password);
             if (result.Succeeded)
             {
+
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+
+                var callbackUrl = Url.Action("ConfirmEmail", "UserProfile", new { userID = newUser.Id, token = token }, Request.Scheme);
 
                 var cart = _dbContext.Carts.Add(new Cart());
                 await _dbContext.SaveChangesAsync();
@@ -71,19 +64,8 @@ namespace GamingShop.Web.API.Controllers
 
             if(user != null && await _userManager.CheckPasswordAsync(user,model.Password))
             {
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(new Claim[]
-                    {
-                        new Claim("UserID", user.Id.ToString())
-                    }),
-                    Expires = DateTime.UtcNow.AddHours(5d),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret_Key)), SecurityAlgorithms.HmacSha256Signature)
-                };
-
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var securityToken = tokenHandler.CreateToken(tokenDescriptor);
-                var token = tokenHandler.WriteToken(securityToken);
+                
+                var token = _tokenWriter.CreateToken("UserID", user.Id, 5d);
 
                 return Ok(new { token });
 

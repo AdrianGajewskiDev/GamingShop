@@ -104,11 +104,11 @@ namespace GamingShop.Web.API.Controllers
 
 
         [Route("ConfirmEmail/{userID}")]
-        public async Task<IActionResult> ConfirmEmail(string userID)
+        public async Task<IActionResult> ConfirmEmail(string userID, string token)
         {
             var user = await _userManager.FindByIdAsync(userID);
 
-            user.EmailConfirmed = true;
+            await _userManager.ConfirmEmailAsync(user, token);
 
             await _dbContext.SaveChangesAsync();
 

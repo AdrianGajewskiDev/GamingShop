@@ -91,6 +91,7 @@ namespace GamingShop.Web.API
             GamingShop.Web.Startup.SetUpServices(services);
 
             ConfigureJWT(services);
+            services.AddSingleton<JWTToken>();
         }
 
 
@@ -106,7 +107,8 @@ namespace GamingShop.Web.API
 
             app.UseMvc(routes => routes.MapRoute(
                 name:"default",
-                template: "api/{controller}/{action?}/{id?}"
+                template: "api/{controller}/{action?}/{id?}",
+                defaults: "api/Games"
                 ));
         }
     }
