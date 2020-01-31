@@ -1,6 +1,5 @@
 ﻿using GamingShop.Data.Models;
 using GamingShop.Web.Data;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

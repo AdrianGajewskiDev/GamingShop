@@ -21,7 +21,7 @@ namespace GamingShop.Web.API
         {
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
+               Subject = new ClaimsIdentity(new Claim[]
                {
                    new Claim(name, value)
                }),

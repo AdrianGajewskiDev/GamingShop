@@ -50,5 +50,18 @@ namespace GamingShop.Web.API.Controllers
             
             return new NoContentResult();
         }
+
+        [HttpPost("RemoveFromCart")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> RemoveFromCart([FromBody]int ID)
+        {
+            var userID = User.Claims.First(x => x.Type == "UserID").Value;
+            var user = await _userManager.FindByIdAsync(userID);
+            var game = _cartService.GetGames(user.CartID).Where(g => g.ID == ID).First();
+
+            _cartService.RemoveFormCart(user.CartID, game);
+
+            return new NoContentResult();
+        }
     }
 }
