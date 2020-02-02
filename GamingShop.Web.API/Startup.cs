@@ -107,8 +107,7 @@ namespace GamingShop.Web.API
 
             app.UseMvc(routes => routes.MapRoute(
                 name:"default",
-                template: "api/{controller}/{action?}/{id?}",
-                defaults: "api/Games"
+                template: "api/{controller}/{action?}/{id?}/{params?}"
                 ));
         }
     }

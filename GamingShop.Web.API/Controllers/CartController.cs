@@ -63,5 +63,15 @@ namespace GamingShop.Web.API.Controllers
 
             return new NoContentResult();
         }
+
+        [HttpGet("GetCardID")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<int> GetCardID()
+        {
+            var userID = User.Claims.First(x => x.Type == "UserID").Value;
+            var user = await _userManager.FindByIdAsync(userID);
+
+            return user.CartID;
+        }
     }
 }
