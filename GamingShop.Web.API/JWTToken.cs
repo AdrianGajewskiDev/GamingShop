@@ -19,12 +19,18 @@ namespace GamingShop.Web.API
 
         public string CreateToken(string name, string value, double expires)
         {
+            var claim = new Claim[] 
+            {
+                new Claim(name, value)
+            };
+
+            return CreateToken(claim, expires);
+        }
+        public string CreateToken(Claim[] claims, double expires)
+        {
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-               Subject = new ClaimsIdentity(new Claim[]
-               {
-                   new Claim(name, value)
-               }),
+                Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddHours(expires),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret_Key)), SecurityAlgorithms.HmacSha256Signature)
             };
