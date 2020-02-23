@@ -9,7 +9,6 @@ namespace GamingShop.Web.API
 {
     public class JWTToken
     {
-
         private readonly ApplicationOptions _options;
 
         public JWTToken(IOptions<ApplicationOptions> options)

@@ -21,15 +21,21 @@ namespace GamingShop.Web.API.Controllers
         private readonly ICart _cartService;
         private readonly IGame _gameService;
         private IEmailSender _emailSender;
+        public IOrder _orderService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
-        public OrderController(ICart cartService, IGame gameService, ApplicationDbContext dbContext, UserManager<ApplicationUser> manager, IEmailSender sender)
+
+
+        public OrderController(ICart cartService, IGame gameService,
+            ApplicationDbContext dbContext, UserManager<ApplicationUser> manager,
+            IEmailSender sender, IOrder orderService)
         {
             _cartService = cartService;
             _gameService = gameService;
             _dbContext = dbContext;
             _userManager = manager;
             _emailSender = sender;
+            _orderService = orderService;
         }
 
         [HttpPut("PlaceOrder/{id}")]
@@ -77,6 +83,23 @@ namespace GamingShop.Web.API.Controllers
             await _cartService.ClearCart(id);
 
             return Ok();
+        }
+
+        [HttpGet("LatestOrders")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IEnumerable<Order>> GetLatestOrders()
+        {
+            var userID = User.Claims.First(c => c.Type == "UserID").Value;
+            var user = await _userManager.FindByIdAsync(userID);
+            var cardID = user.CartID;
+            var latestOrders = _orderService.GetAllByCartID(cardID);
+            
+            foreach(var order in latestOrders)
+            {
+                order.Games = _orderService.GetGamesFromOrder(order.ID);
+            }
+
+            return latestOrders;
         }
 
         decimal CalculateTotalPrice(IEnumerable<Game> games)
