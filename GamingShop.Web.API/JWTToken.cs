@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
@@ -39,6 +40,14 @@ namespace GamingShop.Web.API
             var token = tokenHandler.WriteToken(securityToken);
 
             return token;
+        }
+
+
+        public Claim[] DecodeToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var tokenS = handler.ReadToken(token) as JwtSecurityToken;
+            return tokenS.Claims.ToArray();
         }
     }
 }

@@ -4,6 +4,8 @@ using GamingShop.Web.API.Models;
 using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GamingShop.Web.API.Controllers
@@ -16,12 +18,17 @@ namespace GamingShop.Web.API.Controllers
         private readonly ApplicationDbContext _dbContext;
         private readonly IEmailSender _emailSender;
         private readonly JWTToken _tokenWriter;
-        public UserController(UserManager<ApplicationUser> service, ApplicationDbContext context, IEmailSender emailSender, JWTToken tokenWriter)
+        private readonly ApplicationOptions _options;
+        public UserController(UserManager<ApplicationUser> service, ApplicationDbContext context, IEmailSender emailSender, 
+            JWTToken tokenWriter,
+            IOptions<ApplicationOptions> options)
         {
             _userManager = service;
             _dbContext = context;
             _emailSender = emailSender;
             _tokenWriter = tokenWriter;
+            _options = options.Value;
+
         }
 
         [HttpPost("register")]
@@ -64,15 +71,51 @@ namespace GamingShop.Web.API.Controllers
 
             if(user != null && await _userManager.CheckPasswordAsync(user,model.Password))
             {
-                
                 var token = _tokenWriter.CreateToken("UserID", user.Id, 5d);
 
                 return Ok(new { token });
-
-
             }
             else
                 return BadRequest(new { message = "Incorect username or password!"});
+        }
+
+        [HttpPost("ForgetPassword/{email}")]
+        public async Task<IActionResult> ForgetPassword(string email)
+        {
+
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return BadRequest("Provided email does not exist in our database");
+
+            var generatedToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var jwtToken = _tokenWriter.CreateToken("Token", generatedToken, 1d);
+
+            var redirectLink = $"{_options.ClientURL}resetPassword/{user.Id}/{jwtToken}";  
+
+            await _emailSender.SendEmailAsync(email, "Reset Password", $"<a href={redirectLink}>Click here to reset your password</a>");
+
+            return Ok();
+        }
+
+        [HttpPost("ForgetPasswordCallback")]
+        public async Task<IActionResult> ForgetPasswordCallback([FromBody] ResetPasswordModel model)
+        {
+            var user = await _userManager.FindByIdAsync(model.UserID);
+            
+            var token = _tokenWriter.DecodeToken(model.JWTToken).First(c => c.Type == "Token").Value;
+
+            var result = await _userManager.ResetPasswordAsync(user, token, model.Password);
+
+            if(result.Succeeded)
+            {
+                await _dbContext.SaveChangesAsync();
+
+                return Ok();
+            }
+
+            return BadRequest("Something went wrong while reseting your password, try again");
         }
 
     }

@@ -87,19 +87,23 @@ namespace GamingShop.Web.API.Controllers
 
         [HttpGet("LatestOrders")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IEnumerable<Order>> GetLatestOrders()
+        public async Task<IEnumerable<LatestOrderModel>> GetLatestOrders()
         {
             var userID = User.Claims.First(c => c.Type == "UserID").Value;
             var user = await _userManager.FindByIdAsync(userID);
             var cardID = user.CartID;
             var latestOrders = _orderService.GetAllByCartID(cardID);
-            
-            foreach(var order in latestOrders)
-            {
-                order.Games = _orderService.GetGamesFromOrder(order.ID);
-            }
 
-            return latestOrders;
+            var orders = latestOrders.Select(order => new LatestOrderModel 
+            {
+                Placed = order.Placed.ToShortDateString(),
+                City =  order.City,
+                Street = order.Street,
+                Games = _orderService.GetGamesFromOrder(order.ID),
+                Price = order.TotalPrice
+            });
+
+            return orders;
         }
 
         decimal CalculateTotalPrice(IEnumerable<Game> games)

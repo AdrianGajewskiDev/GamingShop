@@ -1,4 +1,5 @@
 ﻿using GamingShop.Data.Models;
+using GamingShop.Web.API.Models.Response;
 using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -29,7 +30,7 @@ namespace GamingShop.Web.API.Controllers
 
         [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<ActionResult<ApplicationUser>> GetUserProfile()
+        public async Task<ActionResult<ApplicationUserResponseModel>> GetUserProfile()
         {
             string userID = User.Claims.First(c => c.Type == "UserID").Value;
 
@@ -37,7 +38,16 @@ namespace GamingShop.Web.API.Controllers
 
             if (user != null)
             {
-                return user;
+
+                var response = new ApplicationUserResponseModel
+                {
+                    Email = user.Email,
+                    EmailConfirmed = user.EmailConfirmed,
+                    Password = user.Password,
+                    PhoneNumber = user.PhoneNumber,
+                    Username = user.UserName
+                };
+                return response;
             }
             else
                 return BadRequest(new { message = "Cannot get user profile" });
