@@ -301,6 +301,20 @@
       "runtime.ubuntu.14.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
       "runtime.ubuntu.16.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
       "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
+      "SendGrid/9.12.7": {
+        "dependencies": {
+          "Newtonsoft.Json": "12.0.3"
+        },
+        "runtime": {
+          "lib/netstandard2.0/SendGrid.dll": {
+            "assemblyVersion": "9.12.7.0",
+            "fileVersion": "9.12.7.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/SendGrid.dll": {}
+        }
+      },
       "System.Composition/1.0.31": {
         "dependencies": {
           "System.Composition.AttributedModel": "1.0.31",
@@ -524,7 +538,8 @@
         "dependencies": {
           "GamingShop.Data": "1.0.0",
           "MailKit": "2.4.1",
-          "Microsoft.AspNetCore.Identity.UI": "2.2.0"
+          "Microsoft.AspNetCore.Identity.UI": "2.2.0",
+          "SendGrid": "9.12.7"
         },
         "runtime": {
           "GamingShop.Service.dll": {}
@@ -3882,6 +3897,13 @@
       "sha512": "sha512-leXiwfiIkW7Gmn7cgnNcdtNAU70SjmKW3jxGj1iKHOvdn0zRWsgv/l2OJUO5zdGdiv2VRFnAsxxhDgMzofPdWg==",
       "path": "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl/4.3.2",
       "hashPath": "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512"
+    },
+    "SendGrid/9.12.7": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-pI4hxV9oRCA1L2/Gjn5T7U0R1dxQYEyDfG0Qjhqw1pGxOn122wkqhI1pOvt0LTXwoqhF34UudicMy4opjYNwfQ==",
+      "path": "sendgrid/9.12.7",
+      "hashPath": "sendgrid.9.12.7.nupkg.sha512"
     },
     "System.Composition/1.0.31": {
       "type": "package",

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
@@ -17,9 +18,12 @@ namespace GamingShop.Web.API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private ILogger<Startup> _logger;
+
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            _logger = logger;
         }
 
         public IConfiguration Configuration { get; }
@@ -59,6 +63,8 @@ namespace GamingShop.Web.API
             {
                 config.Secret_Key = Configuration["JWT_Config:Secret_Key"].ToString();
                 config.ClientURL = Configuration["JWT_Config:ClientURL"];
+                config.SendGridAPIKey = Configuration["SendGird_Config:APIKey"];
+                _logger.LogCritical("ClientUrl: " + config.ClientURL);
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(setup =>

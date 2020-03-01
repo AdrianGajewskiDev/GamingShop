@@ -1,4 +1,5 @@
 ﻿using GamingShop.Data.Models;
+using GamingShop.Service;
 using GamingShop.Web.API.Models.Response;
 using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Authorization;

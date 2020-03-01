@@ -142,6 +142,10 @@
               "target": "Package",
               "version": "[2.2.0, )",
               "autoReferenced": true
+            },
+            "SendGrid": {
+              "target": "Package",
+              "version": "[9.12.7, )"
             }
           },
           "imports": [

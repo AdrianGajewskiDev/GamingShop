@@ -6,7 +6,7 @@ namespace GamingShop.Service
 {
     public interface IEmailSender
     {
-        Task SendEmailAsync(string toEmail, string subject, string htmlMessage);
+        Task SendEmailAsync(string toEmail, string subject, string htmlMessage, string plainTextContent = null);
         Task SendOrderDetailsEmail(string toEmail, string subject, IEnumerable<Game> items, Address adress, decimal price);
     }
 }

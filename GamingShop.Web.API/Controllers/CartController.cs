@@ -1,13 +1,11 @@
-﻿using System;
+﻿using GamingShop.Data.Models;
+using GamingShop.Service;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GamingShop.Data.Models;
-using GamingShop.Service;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 
 namespace GamingShop.Web.API.Controllers
 {
@@ -47,7 +45,7 @@ namespace GamingShop.Web.API.Controllers
             var user = await _userManager.FindByIdAsync(userID);
 
             _cartService.AddToCart(user.CartID, game);
-            
+
             return new NoContentResult();
         }
 
