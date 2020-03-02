@@ -46,7 +46,7 @@ namespace GamingShop.Web.API.Controllers
                     EmailConfirmed = user.EmailConfirmed,
                     Password = user.Password,
                     PhoneNumber = user.PhoneNumber,
-                    Username = user.UserName
+                    UserName = user.UserName
                 };
                 return response;
             }

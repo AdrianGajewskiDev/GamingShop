@@ -8,26 +8,36 @@ using GamingShop.Data.Models;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using Microsoft.Extensions.Options;
+using System.IO;
+using System.Reflection;
 
 namespace GamingShop.Service
 {
-    public class EmailSender : IEmailSender
+    public class SendGridEmailSender : IEmailSender
     {
         private readonly ApplicationOptions _options;
+        private string APIKEY;
+        private EmailAddress Address = new EmailAddress(EmailCredentials.GetEmail());
 
-        public EmailSender(IOptions<ApplicationOptions> options)
+        public SendGridEmailSender(IOptions<ApplicationOptions> options)
         {
             _options = options.Value;
+            APIKEY = _options.SendGridAPIKey;
         }
 
-        public async Task SendEmailAsync(string toEmail, string subject, string htmlMessage, string plainTextContent = null)
+        public async Task SendVerificationEmailAsync(ApplicationUser user, string subject, string link, string plainTextContent = null)
         {
+            var client = new SendGridClient(APIKEY);
+            var to = new EmailAddress(user.Email);
+            var path = @"C:\Users\adria\Projects\GamingShop\GamingShop.Service\EmailTemplates\Templates\VerificationTemplate.htm";
+            string templateText = default;
+            using (var sr = new StreamReader(path))
+            {
+                templateText = sr.ReadToEnd();
+                templateText =  templateText.Replace("#Name", user.UserName).Replace("#link#", link);
+            }
+            var msg = MailHelper.CreateSingleEmail(Address, to, subject, plainTextContent, templateText);
 
-            var apiKey = _options.SendGridAPIKey;
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress(EmailCredentials.GetEmail());
-            var to = new EmailAddress(toEmail);
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent,htmlMessage);
             var response = await client.SendEmailAsync(msg);
         }
 
@@ -61,6 +71,14 @@ namespace GamingShop.Service
                 // TODO: handle exception
                 throw new InvalidOperationException(ex.Message);
             }
+        }
+
+        public async Task SendEmail(string toEmail, string subject, string htmlMessage)
+        {
+            var client = new SendGridClient(APIKEY);
+            var to = new EmailAddress(toEmail);
+            var msg = MailHelper.CreateSingleEmail(Address, to, subject, null, htmlMessage);
+            var response = await client.SendEmailAsync(msg);
         }
     }
 }

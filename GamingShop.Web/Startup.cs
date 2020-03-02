@@ -13,6 +13,7 @@ using GamingShop.Data.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using GamingShop.Service.Extensions;
 
 namespace GamingShop.Web
 {
@@ -23,14 +24,7 @@ namespace GamingShop.Web
             Configuration = configuration;
         }
 
-        public static void SetUpServices(IServiceCollection services)
-        {
-            services.AddScoped<IGame, GameService>();
-            services.AddScoped<ICart, CartService>();
-            services.AddScoped<IApplicationUser, ApplicationUserService>();
-            services.AddScoped<GamingShop.Service.IEmailSender, EmailSender>();
-            services.AddScoped<IOrder, OrderService>();
-        }
+
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -56,13 +50,8 @@ namespace GamingShop.Web
                 conf.Password.RequireNonAlphanumeric = false;
             });
 
-            SetUpServices(services);
-
-            //services.AddScoped<IGame, GameService>();
-            //services.AddScoped<ICart, CartService>();
-            //services.AddScoped<IApplicationUser, ApplicationUserService>();
-            //services.AddScoped<GamingShop.Service.IEmailSender, EmailSender>();
-            //services.AddScoped<IOrder, OrderService>();
+            services.AddSendGrid<SendGridEmailSender>();
+            services.SetUpApplicationServices();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

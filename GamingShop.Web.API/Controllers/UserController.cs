@@ -55,8 +55,8 @@ namespace GamingShop.Web.API.Controllers
 
                 newUser.CartID = cart.Entity.ID;
                 await _dbContext.SaveChangesAsync();
-                await _emailSender.SendEmailAsync(newUser.Email, "Confirmation Email",
-                        $"Please confirm your account by <a href='{callbackUrl}'>clicking here</a>.");
+                await _emailSender.SendVerificationEmailAsync(newUser, "Confirmation Email",
+                        callbackUrl);
 
                 return newUser;
             }
@@ -94,7 +94,7 @@ namespace GamingShop.Web.API.Controllers
 
             var redirectLink = $"{_options.ClientURL}resetPassword/{user.Id}/{jwtToken}";  
 
-            await _emailSender.SendEmailAsync(email, "Reset Password", $"<a href={redirectLink}>Click here to reset your password</a>");
+            await _emailSender.SendEmail(email, "Reset Password", $"<a href={redirectLink}>Click here to reset your password</a>");
 
             return Ok();
         }

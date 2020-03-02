@@ -1,4 +1,6 @@
 ﻿using GamingShop.Service;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -13,6 +15,7 @@ namespace GamingShop.Web.API
     {
         private readonly ApplicationOptions _options;
 
+       
         public JWTToken(IOptions<ApplicationOptions> options)
         {
             _options = options.Value;
