@@ -4,6 +4,7 @@ using GamingShop.Service.Extensions;
 using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,15 +16,14 @@ namespace GamingShop.Web.API
 {
     public class Startup
     {
-        private ILogger<Startup> _logger;
-
-        public Startup(IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
-            _logger = logger;
+            Environment = env;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment Environment { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -33,6 +33,7 @@ namespace GamingShop.Web.API
                 config.ClientURL = Configuration["JWT_Config:ClientURL"];
                 config.SendGridAPIKey = Configuration["SendGird_Config:APIKey"];
                 config.JWTSecretKey = Configuration["JWT_Config:Secret_Key"];
+                config.WebRootPath = Environment.WebRootPath;
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(setup =>
@@ -63,8 +64,11 @@ namespace GamingShop.Web.API
             }));
 
             services.AddSendGrid<SendGridEmailSender>();
+
             services.SetUpApplicationServices();
+
             services.AddSingleton<JWTToken>();
+
             services.SetUpJWT(conf => 
             {
                 conf.ValidateIssuerSigningKey = true;
@@ -77,9 +81,9 @@ namespace GamingShop.Web.API
 
 
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
+            if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseCors("DevCorsPolicy");

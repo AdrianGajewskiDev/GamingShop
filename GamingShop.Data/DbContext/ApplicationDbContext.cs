@@ -13,5 +13,6 @@ namespace GamingShop.Web.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Image> Images { get; set; }
     }
 }

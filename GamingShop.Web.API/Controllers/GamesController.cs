@@ -6,6 +6,13 @@ using Microsoft.EntityFrameworkCore;
 using GamingShop.Data.Models;
 using GamingShop.Web.Data;
 using GamingShop.Service;
+using GamingShop.Web.API.Models;
+using Microsoft.AspNetCore.Authorization;
+using System;
+using System.Data.SqlClient;
+using GamingShop.Web.API.Models.Response;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace GamingShop.Web.API.Controllers
 {
@@ -15,18 +22,22 @@ namespace GamingShop.Web.API.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IGame _gamesService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public GamesController(ApplicationDbContext context, IGame gameService)
+        public GamesController(ApplicationDbContext context, IGame gameService, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _gamesService = gameService;
+            _userManager = userManager;
         }
 
         // GET: api/Games
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<Game>>> GetGames()
         {
-            return await _context.Games.ToListAsync();
+            var games = await _context.Games.ToListAsync();
+
+            return games;
         }
 
 
@@ -43,7 +54,7 @@ namespace GamingShop.Web.API.Controllers
 
         // GET: api/Games/5
         [HttpGet("GetGame/{id}")]
-        public async Task<ActionResult<Game>> GetGame(int id)
+        public async Task<ActionResult<GameDetailsResponseModel>> GetGame(int id)
         {
             var game = _gamesService.GetByID(id);
 
@@ -52,7 +63,35 @@ namespace GamingShop.Web.API.Controllers
                 return NotFound();
             }
 
-            return game;
+            string ownerUsername = string.Empty;
+
+            if (!string.IsNullOrEmpty(game.OwnerID))
+            {
+                var owner = await _userManager.FindByIdAsync(game.OwnerID);
+                ownerUsername = owner.UserName;
+
+            }
+            else
+            {
+                ownerUsername = "Unknown";
+            }
+
+            var respone = new GameDetailsResponseModel
+            {
+                BestSeller = game.BestSeller,
+                Description = game.Description,
+                ImageUrl = game.ImageUrl,
+                LaunchDate = $"{game.DayOfLaunch}/{game.MonthOfLaunch}/{game.YearOfLaunch}",
+                OwnerUsername = ownerUsername,
+                Pegi = game.Pegi,
+                Platform = game.Platform,
+                Price = game.Price,
+                Producent = game.Producent,
+                Title = game.Title,
+                Type = game.Type
+            };
+
+            return respone;
         }
 
         // PUT: api/Games/5
@@ -85,17 +124,6 @@ namespace GamingShop.Web.API.Controllers
             return NoContent();
         }
 
-        // POST: api/Games/AddGame
-        [HttpPost("AddGame")]
-        public async Task<ActionResult<Game>> PostGame(Game game)
-        {
-            _context.Games.Add(game);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetGame", new { id = game.ID }, game);
-        }
-
-        // DELETE: api/Games/5
         [HttpDelete("DeleteGame/{id}")]
         public async Task<ActionResult<Game>> DeleteGame(int id)
         {

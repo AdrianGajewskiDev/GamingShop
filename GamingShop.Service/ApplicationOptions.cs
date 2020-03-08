@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,5 +12,6 @@ namespace GamingShop.Service
         public string ClientURL { get; set; }
         public string SendGridAPIKey { get; set; }
         public string JWTSecretKey { get; set; }
+        public string WebRootPath { get; set; }
     }
 }

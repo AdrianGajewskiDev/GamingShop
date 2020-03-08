@@ -4,14 +4,16 @@ using GamingShop.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GamingShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200305142058_AddOwnerIDColumn")]
+    partial class AddOwnerIDColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,23 +143,6 @@ namespace GamingShop.Data.Migrations
                     b.HasIndex("OrderID");
 
                     b.ToTable("Games");
-                });
-
-            modelBuilder.Entity("GamingShop.Data.Models.Image", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Path");
-
-                    b.Property<string>("UniqueName");
-
-                    b.Property<string>("UserID");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("GamingShop.Data.Models.Order", b =>
