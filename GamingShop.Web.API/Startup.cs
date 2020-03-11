@@ -1,6 +1,8 @@
 ﻿using GamingShop.Data.Models;
 using GamingShop.Service;
 using GamingShop.Service.Extensions;
+using GamingShop.Service.Implementation;
+using GamingShop.Service.Services;
 using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,7 +35,7 @@ namespace GamingShop.Web.API
                 config.ClientURL = Configuration["JWT_Config:ClientURL"];
                 config.SendGridAPIKey = Configuration["SendGird_Config:APIKey"];
                 config.JWTSecretKey = Configuration["JWT_Config:Secret_Key"];
-                config.WebRootPath = Environment.WebRootPath;
+                config.ImagesPath = @"C:\Users\adria\Desktop\AngularApp\GamingShop_Frontend\GamingShop-Frontend\src\assets\img";
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(setup =>
@@ -65,7 +67,10 @@ namespace GamingShop.Web.API
 
             services.AddSendGrid<SendGridEmailSender>();
 
-            services.SetUpApplicationServices();
+            services.SetUpApplicationServices(conf => 
+            {
+                conf.AddScoped<IImage, ImageService>();
+            });
 
             services.AddSingleton<JWTToken>();
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace GamingShop.Web.API.Models.Response
+﻿namespace GamingShop.Web.API.Models.Response
 {
     public class GameIndexResponseModel
     {

@@ -1,5 +1,6 @@
 ﻿using GamingShop.Data.Models;
 using GamingShop.Service;
+using GamingShop.Service.Services;
 using GamingShop.Web.API.Models;
 using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -18,16 +19,19 @@ namespace GamingShop.Web.API.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ApplicationOptions _options;
+        private readonly IImage _imageService;
 
-        public SalesController(ApplicationDbContext context, IOptions<ApplicationOptions> options)
+        public SalesController(ApplicationDbContext context, IOptions<ApplicationOptions> options,
+            IImage image)
         {
             _context = context;
             _options = options.Value;
+            _imageService = image;
         }
 
         [HttpPost("AddGame")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> AddGame(NewGameModel game)
+        public async Task<int> AddGame(NewGameModel game)
         {
             var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
@@ -51,22 +55,21 @@ namespace GamingShop.Web.API.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok();
+            //return game id to client to pass it to Upload image function
+            return newGame.ID;
         }
 
-        [HttpPost("AddImage")]
+        [HttpPost("AddImage/{id}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> PostImage(IFormFile image)
+        public async Task<IActionResult> PostImage(IFormFile image, int id)
         {
             var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
-            var path = _options.WebRootPath + "\\Images";
+            var path = _options.ImagesPath;
 
-            var uniqueName = $"{userID}_{image.FileName}";
+            var uniqueName = $"{id}_{image.FileName}";
 
-            var fileName = uniqueName + Path.GetExtension(image.FileName);
-
-            var filePath = Path.Combine(path, fileName);
+            var filePath = Path.Combine(path, uniqueName);
 
             if (Directory.Exists(path))
             {
@@ -84,9 +87,12 @@ namespace GamingShop.Web.API.Controllers
             {
                 UserID = userID,
                 UniqueName = uniqueName,
-                Path = filePath
+                Path = filePath,
+                GameID = id
 
             };
+
+            await _imageService.UploadImageAsync(img);
 
             return Ok();
         }

@@ -12,6 +12,6 @@ namespace GamingShop.Service
         public string ClientURL { get; set; }
         public string SendGridAPIKey { get; set; }
         public string JWTSecretKey { get; set; }
-        public string WebRootPath { get; set; }
+        public string ImagesPath { get; set; }
     }
 }

@@ -6,13 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using GamingShop.Data.Models;
 using GamingShop.Web.Data;
 using GamingShop.Service;
-using GamingShop.Web.API.Models;
-using Microsoft.AspNetCore.Authorization;
-using System;
-using System.Data.SqlClient;
 using GamingShop.Web.API.Models.Response;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Http;
+using GamingShop.Service.Services;
 
 namespace GamingShop.Web.API.Controllers
 {
@@ -21,28 +17,45 @@ namespace GamingShop.Web.API.Controllers
     public class GamesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly IGame _gamesService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IGame _gamesService;
+        private readonly IImage _imageService;
 
-        public GamesController(ApplicationDbContext context, IGame gameService, UserManager<ApplicationUser> userManager)
+        public GamesController(ApplicationDbContext context, IGame gameService, UserManager<ApplicationUser> userManager,IImage image)
         {
             _context = context;
             _gamesService = gameService;
             _userManager = userManager;
+            _imageService = image;
         }
 
         // GET: api/Games
         [HttpGet("GetAll")]
-        public async Task<ActionResult<IEnumerable<Game>>> GetGames()
+        public async Task<ActionResult<IEnumerable<GameIndexResponseModel>>> GetGames()
         {
-            var games = await _context.Games.ToListAsync();
+            List<Game> games = new List<Game>();
 
-            return games;
+            await Task.Run(() => 
+            {
+                games = _context.Games.ToList();
+            });;
+
+            var response = games.Select(game => new GameIndexResponseModel 
+            {
+                ID = game.ID,
+                ImageUrl =  _imageService.GetImageNameForGame(game.ID),
+                Platform = game.Platform,
+                Price = game.Price,
+                Producent = game.Producent,
+                Title = game.Title
+            });
+
+            return response.ToArray();
         }
 
 
         [HttpGet("Search/{searchQuery}")]
-        public async Task<ActionResult<IEnumerable<Game>>> GetBySearchQuery(string searchQuery)
+        public ActionResult<IEnumerable<Game>> GetBySearchQuery(string searchQuery)
         {
             if (searchQuery == string.Empty)
                 return NotFound();
@@ -80,7 +93,7 @@ namespace GamingShop.Web.API.Controllers
             {
                 BestSeller = game.BestSeller,
                 Description = game.Description,
-                ImageUrl = game.ImageUrl,
+                ImageUrl = _imageService.GetImageNameForGame(game.ID),
                 LaunchDate = $"{game.DayOfLaunch}/{game.MonthOfLaunch}/{game.YearOfLaunch}",
                 OwnerUsername = ownerUsername,
                 Pegi = game.Pegi,
