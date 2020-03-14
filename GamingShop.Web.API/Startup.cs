@@ -70,6 +70,7 @@ namespace GamingShop.Web.API
             services.SetUpApplicationServices(conf => 
             {
                 conf.AddScoped<IImage, ImageService>();
+                conf.AddScoped<ISale, SalesService>();
             });
 
             services.AddSingleton<JWTToken>();

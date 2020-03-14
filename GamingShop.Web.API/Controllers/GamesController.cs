@@ -37,8 +37,8 @@ namespace GamingShop.Web.API.Controllers
 
             await Task.Run(() => 
             {
-                games = _context.Games.ToList();
-            });;
+                games = _gamesService.GetAllAvailable().ToList();
+            });
 
             var response = games.Select(game => new GameIndexResponseModel 
             {
@@ -55,14 +55,30 @@ namespace GamingShop.Web.API.Controllers
 
 
         [HttpGet("Search/{searchQuery}")]
-        public ActionResult<IEnumerable<Game>> GetBySearchQuery(string searchQuery)
+        public async Task<ActionResult<IEnumerable<GameIndexResponseModel>>> GetBySearchQuery(string searchQuery)
         {
             if (searchQuery == string.Empty)
                 return NotFound();
 
-            var games = _gamesService.GetAllBySearchQuery(searchQuery).ToList();
+            List<Game> games = new List<Game>();
 
-            return games;
+            await Task.Run(() =>
+            {
+                 games = _gamesService.GetAllBySearchQuery(searchQuery).ToList();
+            }); 
+
+
+            var response = games.Select(game => new GameIndexResponseModel
+            {
+                ID = game.ID,
+                ImageUrl = _imageService.GetImageNameForGame(game.ID),
+                Platform = game.Platform,
+                Price = game.Price,
+                Producent = game.Producent,
+                Title = game.Title
+            });
+
+            return response.ToArray();
         }
 
         // GET: api/Games/5
@@ -101,7 +117,8 @@ namespace GamingShop.Web.API.Controllers
                 Price = game.Price,
                 Producent = game.Producent,
                 Title = game.Title,
-                Type = game.Type
+                Type = game.Type,
+                Sold = game.Sold
             };
 
             return respone;

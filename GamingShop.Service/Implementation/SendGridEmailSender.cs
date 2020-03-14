@@ -43,7 +43,7 @@ namespace GamingShop.Service
 
         public async Task SendOrderDetailsEmail(string toEmail, string subject, IEnumerable<Game> items, Address adress, decimal price)
         {
-            string Body = System.IO.File.ReadAllText(@"C:\Users\adria\Projects\GamingShop\GamingShop.Service\EmailTemplates\OrderEmailTemplate.html");
+            string Body = System.IO.File.ReadAllText(@"C:\Users\adria\Projects\GamingShop\GamingShop.Service\EmailTemplates\Templates\OrderEmailTemplate.htm");
             Body = Body.Replace("#Country#",adress.Country);
             Body = Body.Replace("#City#", adress.City);
             Body = Body.Replace("#Street#", adress.Street);

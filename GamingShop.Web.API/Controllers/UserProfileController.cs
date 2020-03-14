@@ -1,4 +1,5 @@
 ﻿using GamingShop.Data.Models;
+using GamingShop.Data;
 using GamingShop.Service;
 using GamingShop.Web.API.Models.Response;
 using GamingShop.Web.Data;
@@ -6,8 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -21,14 +20,14 @@ namespace GamingShop.Web.API.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
-        private ApplicationOptions _options;
+        private readonly ApplicationOptions _options;
+
         public UserProfileController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, IOptions<ApplicationOptions> options)
         {
             _userManager = userManager;
             _dbContext = context;
             _options = options.Value;
         }
-
 
         [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -54,6 +53,8 @@ namespace GamingShop.Web.API.Controllers
             else
                 return BadRequest(new { message = "Cannot get user profile" });
         }
+
+        #region Updating user profile details
 
         [HttpPost("UpdateUsername/{username}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -94,6 +95,7 @@ namespace GamingShop.Web.API.Controllers
 
             return new BadRequestResult();
         }
+
         [HttpPost("UpdatePhoneNumber/{phoneNumber}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UpdatePhoneNumber(string phoneNumber)
@@ -114,6 +116,7 @@ namespace GamingShop.Web.API.Controllers
             return new BadRequestResult();
         }
 
+        #endregion
 
         [Route("ConfirmEmail/{userID}")]
         public async Task<IActionResult> ConfirmEmail(string userID, string token)

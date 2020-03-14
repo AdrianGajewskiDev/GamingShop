@@ -1,4 +1,6 @@
-﻿namespace GamingShop.Data.Models
+﻿using System;
+
+namespace GamingShop.Data.Models
 {
     public class Game
     {
@@ -6,6 +8,7 @@
         public int Pegi { get; set; }
         public decimal Price { get; set; }
         public bool BestSeller { get; set; }
+        public bool Sold { get; set; } 
         public string ImageUrl { get; set; }
         public string DayOfLaunch { get; set; }
         public string MonthOfLaunch { get; set; }
@@ -16,5 +19,6 @@
         public string Platform { get; set; }
         public string Type { get; set; }
         public string OwnerID { get; set; }
+        public DateTime Posted { get; set; }
     }
 }

@@ -13,5 +13,6 @@
         public string Platform { get; set; }
         public string Type { get; set; }
         public string OwnerUsername { get; set; }
+        public bool Sold { get; set; }
     }
 }

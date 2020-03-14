@@ -1,14 +1,17 @@
-﻿using GamingShop.Data.Models;
+﻿using GamingShop.Data;
+using GamingShop.Data.Models;
 using GamingShop.Service;
 using GamingShop.Service.Services;
 using GamingShop.Web.API.Models;
 using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GamingShop.Web.API.Controllers
@@ -20,13 +23,15 @@ namespace GamingShop.Web.API.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ApplicationOptions _options;
         private readonly IImage _imageService;
+        private readonly ISale _saleService;
 
         public SalesController(ApplicationDbContext context, IOptions<ApplicationOptions> options,
-            IImage image)
+            IImage image, ISale sale)
         {
             _context = context;
             _options = options.Value;
             _imageService = image;
+            _saleService = sale;
         }
 
         [HttpPost("AddGame")]
@@ -48,7 +53,9 @@ namespace GamingShop.Web.API.Controllers
                 Title = game.Title,
                 Type = game.Type,
                 YearOfLaunch = game.LaunchDate.Year.ToString(),
-                OwnerID = userID
+                OwnerID = userID,
+                Posted = DateTime.UtcNow,
+                Sold = false
             };
 
             await _context.Games.AddAsync(newGame);
@@ -95,6 +102,22 @@ namespace GamingShop.Web.API.Controllers
             await _imageService.UploadImageAsync(img);
 
             return Ok();
+        }
+
+        [HttpGet("UserSales")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IEnumerable<SaleModel>> GetUserSale()
+        {
+            var userID = User.FindFirst(c => c.Type == "UserID").Value;
+
+            List<SaleModel> sales = new List<SaleModel>();
+
+            await Task.Run(() =>
+            {
+                sales = _saleService.GetUserSales(userID).ToList();
+            });
+
+            return sales;
         }
     }
 }

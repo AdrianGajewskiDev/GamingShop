@@ -49,7 +49,9 @@ namespace GamingShop.Web.API.Controllers
             var user = await _userManager.FindByIdAsync(userID);
 
             var email = (string.IsNullOrEmpty(model.AlternativeEmailAdress)) ? user.Email : model.AlternativeEmailAdress;
+
             var phoneNumber = (string.IsNullOrEmpty(model.AlternativePhoneNumber)) ? user.PhoneNumber : model.AlternativePhoneNumber;
+
             var totalPrice = CalculateTotalPrice(cartItems);
 
             var result = await _dbContext.Orders.AddAsync(new Order
@@ -78,9 +80,11 @@ namespace GamingShop.Web.API.Controllers
                 });
             }
 
-            await _emailSender.SendOrderDetailsEmail(email, "Order",cartItems, new Address { Street = model.Street, City = model.City, Country = model.Country, PhoneNumber =phoneNumber }, totalPrice);
+            await _emailSender.SendOrderDetailsEmail(email, "Order",cartItems, new Address { Street = model.Street, City = model.City, Country = model.Country, PhoneNumber = phoneNumber }, totalPrice);
 
             await _cartService.ClearCart(id);
+
+            await _orderService.MarkGameAsSold(cartItems);
 
             return Ok();
         }
