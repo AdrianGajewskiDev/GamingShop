@@ -86,7 +86,7 @@ namespace GamingShop.Web.Controllers
                     return RedirectToAction("Index", "Account");
                 }
 
-                return View();
+                return new ContentResult();
             }
             else if (IsEmailDiffrent(email))
             {
@@ -100,7 +100,7 @@ namespace GamingShop.Web.Controllers
                     return RedirectToAction("Index", "Account");
                 }
 
-                return View();
+                return new ContentResult();
 
             }
             else if (IsPhoneNumberDiffrent(phonenumber))
@@ -114,10 +114,10 @@ namespace GamingShop.Web.Controllers
                     return RedirectToAction("Index", "Account");
                 }
 
-                return View();
+                return new ContentResult();
 
             }
-            return View();
+            return new ContentResult();
 
         }
 

@@ -9,6 +9,8 @@ using GamingShop.Service;
 using GamingShop.Web.API.Models.Response;
 using Microsoft.AspNetCore.Identity;
 using GamingShop.Service.Services;
+using GamingShop.Web.API.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GamingShop.Web.API.Controllers
 {
@@ -29,7 +31,6 @@ namespace GamingShop.Web.API.Controllers
             _imageService = image;
         }
 
-        // GET: api/Games
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<GameIndexResponseModel>>> GetGames()
         {
@@ -52,7 +53,6 @@ namespace GamingShop.Web.API.Controllers
 
             return response.ToArray();
         }
-
 
         [HttpGet("Search/{searchQuery}")]
         public async Task<ActionResult<IEnumerable<GameIndexResponseModel>>> GetBySearchQuery(string searchQuery)
@@ -81,7 +81,6 @@ namespace GamingShop.Web.API.Controllers
             return response.ToArray();
         }
 
-        // GET: api/Games/5
         [HttpGet("GetGame/{id}")]
         public async Task<ActionResult<GameDetailsResponseModel>> GetGame(int id)
         {
@@ -124,10 +123,22 @@ namespace GamingShop.Web.API.Controllers
             return respone;
         }
 
-        // PUT: api/Games/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutGame(int id, Game game)
+        [HttpPut("UpdateGame/{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> PutGame(int id, [FromBody] UpdateGameModel game)
         {
+            var userID = User.FindFirst(c => c.Type == "UserID").Value;
+
+            var dayOfLaunch = game.LaunchDate.Split("/")[0];
+            var monthOfLaunch = game.LaunchDate.Split("/")[1];
+            var yearOfLaunch = game.LaunchDate.Split("/")[2];
+
+            game.DayOfLaunch = dayOfLaunch;
+            game.MonthOfLaunch = monthOfLaunch;
+            game.YearOfLaunch = yearOfLaunch;
+            game.OwnerID = userID;
+            game.ImageUrl = _imageService.GetImageNameForGame(game.ID);
+
             if (id != game.ID)
             {
                 return BadRequest();
@@ -151,7 +162,7 @@ namespace GamingShop.Web.API.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok();
         }
 
         [HttpDelete("DeleteGame/{id}")]
@@ -166,7 +177,7 @@ namespace GamingShop.Web.API.Controllers
             _context.Games.Remove(game);
             await _context.SaveChangesAsync();
 
-            return game;
+            return Ok();
         }
 
         private bool GameExists(int id)

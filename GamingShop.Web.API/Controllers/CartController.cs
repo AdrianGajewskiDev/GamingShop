@@ -36,9 +36,9 @@ namespace GamingShop.Web.API.Controllers
             return games;
         }
 
-        [HttpPost("AddItemToCart")]
+        [HttpPost("AddItemToCart/{ID}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> AddToCart([FromBody] int ID)
+        public async Task<IActionResult> AddToCart( int ID)
         {
             var userID = User.Claims.First(x => x.Type == "UserID").Value;
             var game = _gameService.GetByID(ID);

@@ -40,19 +40,23 @@ namespace GamingShop.Web.API.Controllers
         {
             var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
+            var dayOfLaunch = game.LaunchDate.Split("/")[0];
+            var monthOfLaunch = game.LaunchDate.Split("/")[1];
+            var yearOfLaunch = game.LaunchDate.Split("/")[2];
+
             Game newGame = new Game
             {
-                DayOfLaunch = game.LaunchDate.Day.ToString(),
+                DayOfLaunch = dayOfLaunch,
                 Description = game.Description,
                 ImageUrl = game.ImageUrl,
-                MonthOfLaunch = game.LaunchDate.Month.ToString(),
+                MonthOfLaunch = monthOfLaunch,
                 Pegi = game.Pegi,
                 Platform = game.Platform,
                 Price = game.Price,
                 Producent = game.Producent,
                 Title = game.Title,
                 Type = game.Type,
-                YearOfLaunch = game.LaunchDate.Year.ToString(),
+                YearOfLaunch = yearOfLaunch,
                 OwnerID = userID,
                 Posted = DateTime.UtcNow,
                 Sold = false
@@ -66,40 +70,24 @@ namespace GamingShop.Web.API.Controllers
             return newGame.ID;
         }
 
-        [HttpPost("AddImage/{id}")]
+        [HttpPost("AddGameImage/{id}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> PostImage(IFormFile image, int id)
+        public async Task<IActionResult> PostGameImage(IFormFile image, int id)
         {
             var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
-            var path = _options.ImagesPath;
+            await _imageService.UploadImageAsync(id,image, ImageType.GameCover);
 
-            var uniqueName = $"{id}_{image.FileName}";
+            return Ok();
+        }
 
-            var filePath = Path.Combine(path, uniqueName);
+        [HttpPost("AddUserProfileImage")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddUserProfileImage(IFormFile image)
+        {
+            var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
-            if (Directory.Exists(path))
-            {
-                using (var sr = new FileStream(filePath, FileMode.Create))
-                {
-                    await image.CopyToAsync(sr);
-                }
-            }
-            else
-            {
-                return BadRequest("Directory does not exist");
-            }
-
-            var img = new Image
-            {
-                UserID = userID,
-                UniqueName = uniqueName,
-                Path = filePath,
-                GameID = id
-
-            };
-
-            await _imageService.UploadImageAsync(img);
+            await _imageService.UploadImageAsync(userID, image, ImageType.UserProfile);
 
             return Ok();
         }

@@ -25,7 +25,6 @@ namespace GamingShop.Web.API.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
 
-
         public OrderController(ICart cartService, IGame gameService,
             ApplicationDbContext dbContext, UserManager<ApplicationUser> manager,
             IEmailSender sender, IOrder orderService)

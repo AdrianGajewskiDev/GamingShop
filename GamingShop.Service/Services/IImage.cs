@@ -6,9 +6,11 @@ namespace GamingShop.Service.Services
 {
     public interface IImage
     {
-        Task UploadImageAsync(Image image);
+        Task UploadImageAsync(int ID,IFormFile image, ImageType type);
+        Task UploadImageAsync(string ID, IFormFile image, ImageType type);
         string GetImagePathForGame(int id);
         string GetImageNameForGame(int id);
+        string GetImagePathForUser(string userID);
 
     }
 }

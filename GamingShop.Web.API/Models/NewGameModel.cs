@@ -11,7 +11,7 @@ namespace GamingShop.Web.API.Models
         public string Producent { get; set; }
         public decimal Price { get; set; }
         public int Pegi { get; set; }
-        public DateTime LaunchDate { get; set; }
+        public string LaunchDate { get; set; }
         public string Platform { get; set; }
         public string Type { get; set; }
         public string ImageUrl { get; set; }

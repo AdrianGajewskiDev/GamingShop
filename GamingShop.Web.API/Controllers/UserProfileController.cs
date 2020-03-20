@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using GamingShop.Service.Services;
 
 namespace GamingShop.Web.API.Controllers
 {
@@ -21,12 +22,15 @@ namespace GamingShop.Web.API.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly ApplicationOptions _options;
+        private readonly IImage _imageService;
 
-        public UserProfileController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, IOptions<ApplicationOptions> options)
+        public UserProfileController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, 
+            IOptions<ApplicationOptions> options, IImage imageService)
         {
             _userManager = userManager;
             _dbContext = context;
             _options = options.Value;
+            _imageService = imageService;
         }
 
         [HttpGet]
@@ -46,7 +50,9 @@ namespace GamingShop.Web.API.Controllers
                     EmailConfirmed = user.EmailConfirmed,
                     Password = user.Password,
                     PhoneNumber = user.PhoneNumber,
-                    UserName = user.UserName
+                    UserName = user.UserName,
+                    ID = userID,
+                    ImageUrl = _imageService.GetImagePathForUser(userID)
                 };
                 return response;
             }

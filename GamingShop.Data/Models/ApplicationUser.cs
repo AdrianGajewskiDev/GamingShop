@@ -6,5 +6,6 @@ namespace GamingShop.Data.Models
     {
         public int CartID { get; set; }
         public string Password { get; set; }
+        public string ImageUrl { get; set; }
     }
 }
