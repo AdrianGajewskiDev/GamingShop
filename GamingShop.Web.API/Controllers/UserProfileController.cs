@@ -15,6 +15,9 @@ using GamingShop.Service.Services;
 
 namespace GamingShop.Web.API.Controllers
 {
+    /// <summary>
+    /// Controller to handle User Profile actions
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UserProfileController : Controller
@@ -24,6 +27,13 @@ namespace GamingShop.Web.API.Controllers
         private readonly ApplicationOptions _options;
         private readonly IImage _imageService;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="userManager">The user manager</param>
+        /// <param name="context">Database context</param>
+        /// <param name="options">Application options</param>
+        /// <param name="imageService">Image service</param>
         public UserProfileController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, 
             IOptions<ApplicationOptions> options, IImage imageService)
         {
@@ -33,6 +43,10 @@ namespace GamingShop.Web.API.Controllers
             _imageService = imageService;
         }
 
+        /// <summary>
+        /// Action to get user profile details
+        /// </summary>
+        /// <returns>User profile details</returns>
         [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<ApplicationUserResponseModel>> GetUserProfile()
@@ -62,6 +76,11 @@ namespace GamingShop.Web.API.Controllers
 
         #region Updating user profile details
 
+        /// <summary>
+        /// Updates user username
+        /// </summary>
+        /// <param name="username">A new username</param>
+        /// <returns>200 Ok result if updating was successfull</returns>
         [HttpPost("UpdateUsername/{username}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UpdateUsername(string username)
@@ -76,12 +95,17 @@ namespace GamingShop.Web.API.Controllers
 
             if (result.Succeeded)
             {
-                return new NoContentResult();
+                return Ok();
             }
 
-            return new BadRequestResult();
+            return BadRequest();
         }
 
+        /// <summary>
+        /// Updates user email
+        /// </summary>
+        /// <param name="username">A new email</param>
+        /// <returns>200 Ok result if updating was successfull</returns>
         [HttpPost("UpdateEmail/{email}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UpdateEmail(string email)
@@ -96,12 +120,17 @@ namespace GamingShop.Web.API.Controllers
 
             if (result.Succeeded)
             {
-                return new NoContentResult();
+                return Ok();
             }
 
-            return new BadRequestResult();
+            return BadRequest();
         }
 
+        /// <summary>
+        /// Updates user phone number
+        /// </summary>
+        /// <param name="username">A new phone number</param>
+        /// <returns>200 Ok result if updating was successfull</returns>
         [HttpPost("UpdatePhoneNumber/{phoneNumber}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UpdatePhoneNumber(string phoneNumber)
@@ -116,14 +145,20 @@ namespace GamingShop.Web.API.Controllers
 
             if (result.Succeeded)
             {
-                return new NoContentResult();
+                return Ok();
             }
 
-            return new BadRequestResult();
+            return BadRequest();
         }
 
         #endregion
 
+        /// <summary>
+        /// An action to confirm user email 
+        /// </summary>
+        /// <param name="userID">User ID with to confirm email</param>
+        /// <param name="token">A confirmation token</param>
+        /// <returns></returns>
         [Route("ConfirmEmail/{userID}")]
         public async Task<IActionResult> ConfirmEmail(string userID, string token)
         {
@@ -137,6 +172,10 @@ namespace GamingShop.Web.API.Controllers
             return new NoContentResult();
         }
 
+        /// <summary>
+        /// Opens browser with specified url
+        /// </summary>
+        /// <param name="url">The url to open</param>
         private void OpenUrl(string url)
         {
             try

@@ -1,4 +1,6 @@
-﻿namespace GamingShop.Data.Models
+﻿using System;
+
+namespace GamingShop.Data.Models
 {
     public class Image
     {
@@ -7,5 +9,6 @@
         public int GameID { get; set; }
         public string UniqueName { get; set; }
         public string Path { get; set; }
+        public DateTime Posted { get; set; }
     }
 }

@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace GamingShop.Web.API.Controllers
 {
+    /// <summary>
+    /// A controller to handle user account related requests
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : Controller
@@ -19,6 +22,15 @@ namespace GamingShop.Web.API.Controllers
         private readonly IEmailSender _emailSender;
         private readonly JWTToken _tokenWriter;
         private readonly ApplicationOptions _options;
+
+        /// <summary>
+        /// A default constructor 
+        /// </summary>
+        /// <param name="service">A user manager</param>
+        /// <param name="context">A Database context</param>
+        /// <param name="emailSender">A Email Sender</param>
+        /// <param name="tokenWriter">A Jason Web Token Writer</param>
+        /// <param name="options">A Application Settings</param>
         public UserController(UserManager<ApplicationUser> service, ApplicationDbContext context, IEmailSender emailSender,
             JWTToken tokenWriter,
             IOptions<ApplicationOptions> options)
@@ -31,6 +43,11 @@ namespace GamingShop.Web.API.Controllers
 
         }
 
+        /// <summary>
+        /// Register new user
+        /// </summary>
+        /// <param name="registerModel">User credentials</param>
+        /// <returns>Adds new user to database and returns his details if registering was successful</returns>
         [HttpPost("register")]
         public async Task<ActionResult<ApplicationUser>> RegisterUser(RegisterModel registerModel)
         {
@@ -64,6 +81,11 @@ namespace GamingShop.Web.API.Controllers
                 return BadRequest();
         }
 
+        /// <summary>
+        /// Checks if <paramref name="model"/> is valid and the log user in
+        /// </summary>
+        /// <param name="model">A user login credentials</param>
+        /// <returns>Returns JWT containing UserID</returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginModel model)
         {
@@ -79,6 +101,11 @@ namespace GamingShop.Web.API.Controllers
                 return BadRequest(new { message = "Incorect username or password!" });
         }
 
+        /// <summary>
+        /// Sends a verification message to <paramref name="email"/> email
+        /// </summary>
+        /// <param name="email">A email to with send the verification message</param>
+        /// <returns>Returs 200 ok result</returns>
         [HttpPost("ForgetPassword/{email}")]
         public async Task<IActionResult> ForgetPassword(string email)
         {
@@ -99,6 +126,12 @@ namespace GamingShop.Web.API.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// A method that is called from <see cref="ForgetPassword(string)" verification link/>
+        /// and reset user password
+        /// </summary>
+        /// <param name="model">A new password model</param>
+        /// <returns>Returs 200 ok result if password was successfully changed</returns>
         [HttpPost("ForgetPasswordCallback")]
         public async Task<IActionResult> ForgetPasswordCallback([FromBody] ResetPasswordModel model)
         {
@@ -118,6 +151,11 @@ namespace GamingShop.Web.API.Controllers
             return BadRequest("Something went wrong while reseting your password, try again");
         }
 
+        /// <summary>
+        /// Gets user username 
+        /// </summary>
+        /// <param name="id">A ID of the user</param>
+        /// <returns>Returns user username</returns>
         [HttpGet("getUsername/{id}")]
         public async Task<string> GetUsername(string id)
        {

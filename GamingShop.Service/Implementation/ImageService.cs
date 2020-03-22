@@ -44,12 +44,14 @@ namespace GamingShop.Service.Implementation
 
         public string GetImagePathForUser(string userID)
         {
-            var image = _context.Images.Where(img => img.UserID == userID).FirstOrDefault();
+            var images = _context.Images.Where(img => img.UserID == userID);
 
-            if (image == null)
+            if (!images.Any())
                 return "Image Not Found";
 
-            return image.UniqueName;
+            var sortedImages = images.OrderByDescending(img => img.Posted);
+
+            return sortedImages.First().UniqueName;
         }
 
         public async Task UploadImageAsync(int ID, IFormFile image, ImageType type)
@@ -87,7 +89,8 @@ namespace GamingShop.Service.Implementation
                     {
                         UniqueName = uniqueName,
                         Path = filePath,
-                        GameID = int.Parse(ID)
+                        GameID = int.Parse(ID),
+                        Posted = DateTime.UtcNow
                     };
                     break;
                 case ImageType.UserProfile:
@@ -95,7 +98,8 @@ namespace GamingShop.Service.Implementation
                     {
                         UniqueName = uniqueName,
                         Path = filePath,
-                        UserID = ID
+                        UserID = ID,
+                        Posted = DateTime.UtcNow
                     };
                     break;
                 default:

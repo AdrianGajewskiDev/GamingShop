@@ -14,6 +14,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GamingShop.Web.API.Controllers
 {
+    /// <summary>
+    /// The controller to handle order requests
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class OrderController : ControllerBase
@@ -21,10 +24,19 @@ namespace GamingShop.Web.API.Controllers
         private readonly ICart _cartService;
         private readonly IGame _gameService;
         private IEmailSender _emailSender;
-        public IOrder _orderService;
+        private IOrder _orderService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="cartService">A cart service</param>
+        /// <param name="gameService">A game service </param>
+        /// <param name="dbContext">A Database context</param>
+        /// <param name="manager">A user manager</param>
+        /// <param name="sender">A email sender</param>
+        /// <param name="orderService">A order service</param>
         public OrderController(ICart cartService, IGame gameService,
             ApplicationDbContext dbContext, UserManager<ApplicationUser> manager,
             IEmailSender sender, IOrder orderService)
@@ -36,7 +48,13 @@ namespace GamingShop.Web.API.Controllers
             _emailSender = sender;
             _orderService = orderService;
         }
-
+        
+        /// <summary>
+        /// Places new order
+        /// </summary>
+        /// <param name="id">An ID of the user cart</param>
+        /// <param name="model">A model containing order details</param>
+        /// <returns>Returns 200 ok status if order was successfully placed</returns>
         [HttpPut("PlaceOrder/{id}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> PlaceOrder(int id, [FromBody] OrderModel model)
@@ -88,6 +106,10 @@ namespace GamingShop.Web.API.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Gets all user latest orders
+        /// </summary>
+        /// <returns>Returns an Array of <see cref="LatestOrderModel" /> items</returns>
         [HttpGet("LatestOrders")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IEnumerable<LatestOrderModel>> GetLatestOrders()
@@ -106,9 +128,14 @@ namespace GamingShop.Web.API.Controllers
                 Price = order.TotalPrice
             });
 
-            return orders;
+            return orders.ToArray();
         }
 
+        /// <summary>
+        /// Method to calculate total price
+        /// </summary>
+        /// <param name="games">A list of games in user cart</param>
+        /// <returns>Total price of all items in cart</returns>
         decimal CalculateTotalPrice(IEnumerable<Game> games)
         {
             decimal price = 0;

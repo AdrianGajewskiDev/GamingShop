@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 
 namespace GamingShop.Web.API.Controllers
 {
+    /// <summary>
+    /// A controller to handle user sales actions
+    /// </summary>
     [ApiController]
     [Route("api/Sales")]
     public class SalesController : Controller
@@ -25,6 +28,13 @@ namespace GamingShop.Web.API.Controllers
         private readonly IImage _imageService;
         private readonly ISale _saleService;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="context">A Database context</param>
+        /// <param name="options">Application Options</param>
+        /// <param name="image">A Image service</param>
+        /// <param name="sale">A Sale Service</param>
         public SalesController(ApplicationDbContext context, IOptions<ApplicationOptions> options,
             IImage image, ISale sale)
         {
@@ -34,6 +44,11 @@ namespace GamingShop.Web.API.Controllers
             _saleService = sale;
         }
 
+        /// <summary>
+        /// Adds new game item to database
+        /// </summary>
+        /// <param name="game">A game to add</param>
+        /// <returns>Returns game id to client to pass it to Upload image function</returns>
         [HttpPost("AddGame")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<int> AddGame(NewGameModel game)
@@ -66,10 +81,15 @@ namespace GamingShop.Web.API.Controllers
 
             await _context.SaveChangesAsync();
 
-            //return game id to client to pass it to Upload image function
             return newGame.ID;
         }
 
+        /// <summary>
+        /// Adds game image to database and copy file to specified folder
+        /// </summary>
+        /// <param name="image">File to add</param>
+        /// <param name="id">An ID of the game that file belongs to</param>
+        /// <returns>200 ok status if uploading was successfull</returns>
         [HttpPost("AddGameImage/{id}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> PostGameImage(IFormFile image, int id)
@@ -81,6 +101,12 @@ namespace GamingShop.Web.API.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Adds user profile image to database and copy file to specified folder
+        /// </summary>
+        /// <param name="image">File to add</param>
+        /// <param name="id">An ID of the user that file belongs to</param>
+        /// <returns>200 ok status if uploading was successfull</returns>
         [HttpPost("AddUserProfileImage")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddUserProfileImage(IFormFile image)
@@ -92,6 +118,10 @@ namespace GamingShop.Web.API.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Gets all user currently available sales
+        /// </summary>
+        /// <returns>Returns list of user sales</returns>
         [HttpGet("UserSales")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IEnumerable<SaleModel>> GetUserSale()

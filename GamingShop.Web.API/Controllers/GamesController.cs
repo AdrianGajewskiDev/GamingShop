@@ -14,6 +14,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace GamingShop.Web.API.Controllers
 {
+    /// <summary>
+    /// The controller to handle actions related to games
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class GamesController : ControllerBase
@@ -23,6 +26,13 @@ namespace GamingShop.Web.API.Controllers
         private readonly IGame _gamesService;
         private readonly IImage _imageService;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="context">A Database context</param>
+        /// <param name="gameService">A Game Service</param>
+        /// <param name="userManager">A User Manager</param>
+        /// <param name="image">A Image Service</param>
         public GamesController(ApplicationDbContext context, IGame gameService, UserManager<ApplicationUser> userManager,IImage image)
         {
             _context = context;
@@ -31,6 +41,10 @@ namespace GamingShop.Web.API.Controllers
             _imageService = image;
         }
 
+        /// <summary>
+        /// Gets all available games in store database
+        /// </summary>
+        /// <returns>Array of <see cref="GameIndexResponseModel"/></returns>
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<GameIndexResponseModel>>> GetGames()
         {
@@ -54,6 +68,11 @@ namespace GamingShop.Web.API.Controllers
             return response.ToArray();
         }
 
+        /// <summary>
+        /// Gets games corresponding to search query
+        /// </summary>
+        /// <param name="searchQuery">A search query</param>
+        /// <returns>Array of games where title, producent or platform matches the <paramref name="searchQuery"/></returns>
         [HttpGet("Search/{searchQuery}")]
         public async Task<ActionResult<IEnumerable<GameIndexResponseModel>>> GetBySearchQuery(string searchQuery)
         {
@@ -81,6 +100,11 @@ namespace GamingShop.Web.API.Controllers
             return response.ToArray();
         }
 
+        /// <summary>
+        /// Gets game corresponding to <paramref name="id"/>
+        /// </summary>
+        /// <param name="id">An ID of the game to get</param>
+        /// <returns>Returns the <see cref="GameDetailsResponseModel"/> game details</returns>
         [HttpGet("GetGame/{id}")]
         public async Task<ActionResult<GameDetailsResponseModel>> GetGame(int id)
         {
@@ -123,6 +147,12 @@ namespace GamingShop.Web.API.Controllers
             return respone;
         }
 
+        /// <summary>
+        /// Updates the game
+        /// </summary>
+        /// <param name="id">An ID of the game to update</param>
+        /// <param name="game">An new values for game to update</param>
+        /// <returns>Returns the 200 ok status if updating was successful</returns>
         [HttpPut("UpdateGame/{id}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> PutGame(int id, [FromBody] UpdateGameModel game)
@@ -165,6 +195,11 @@ namespace GamingShop.Web.API.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Deletes game from store
+        /// </summary>
+        /// <param name="id">An ID of the game to delete</param>
+        /// <returns>Returns the 200 ok status if updating was successfull</returns>
         [HttpDelete("DeleteGame/{id}")]
         public async Task<ActionResult<Game>> DeleteGame(int id)
         {
@@ -180,6 +215,11 @@ namespace GamingShop.Web.API.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Checks if game with <paramref name="id"/> currently exists in store database
+        /// </summary>
+        /// <param name="id">A game id</param>
+        /// <returns>Returns true if game with <paramref name="id"/> already exists in database</returns>
         private bool GameExists(int id)
         {
             return _context.Games.Any(e => e.ID == id);
