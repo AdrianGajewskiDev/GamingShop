@@ -65,6 +65,8 @@ namespace GamingShop.Web.API.Controllers
 
             var user = await _userManager.FindByIdAsync(userID);
 
+            var itemsOwner = await _userManager.FindByIdAsync(cartItems.First().OwnerID);
+
             var email = (string.IsNullOrEmpty(model.AlternativeEmailAdress)) ? user.Email : model.AlternativeEmailAdress;
 
             var phoneNumber = (string.IsNullOrEmpty(model.AlternativePhoneNumber)) ? user.PhoneNumber : model.AlternativePhoneNumber;
@@ -83,12 +85,14 @@ namespace GamingShop.Web.API.Controllers
                 Placed = DateTime.Now,
             });
 
-            await _dbContext.SaveChangesAsync();
 
             var orderID = _dbContext.Orders.Last().ID;
 
+            string gameTitles = string.Empty;
+
             foreach (var item in cartItems)
             {
+                gameTitles = gameTitles.Concat(item.Title).ToString();
                 _dbContext.OrderItems.Add(new OrderItem
                 {
                     GameID = item.ID,
@@ -97,7 +101,23 @@ namespace GamingShop.Web.API.Controllers
                 });
             }
 
+            var message = new Message 
+            {
+                Content = $"Ordered items: {gameTitles}",
+                RecipientEmail = itemsOwner.Email,
+                RecipientID = itemsOwner.Id,
+                SenderID = user.Id,
+                Sent = DateTime.UtcNow,
+                Subject = $"A {user.UserName} ordered your game(s)"
+            };
+            _dbContext.Messages.Add(message);
+
+            await _dbContext.SaveChangesAsync();
+
+
             await _emailSender.SendOrderDetailsEmail(email, "Order",cartItems, new Address { Street = model.Street, City = model.City, Country = model.Country, PhoneNumber = phoneNumber }, totalPrice);
+
+            await _emailSender.SendEmail(message);
 
             await _cartService.ClearCart(id);
 

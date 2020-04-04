@@ -10,6 +10,7 @@ using SendGrid.Helpers.Mail;
 using Microsoft.Extensions.Options;
 using System.IO;
 using System.Reflection;
+using System.Linq;
 
 namespace GamingShop.Service
 {
@@ -49,6 +50,12 @@ namespace GamingShop.Service
             Body = Body.Replace("#Street#", adress.Street);
             Body = Body.Replace("#PhoneNumber#", adress.PhoneNumber);
             Body = Body.Replace("#price#", price.ToString());
+
+            foreach (var game in items)
+            {
+                Body += $"<p>{game.Title}</p>";
+            }
+
             try
             {
                 SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
@@ -73,11 +80,11 @@ namespace GamingShop.Service
             }
         }
 
-        public async Task SendEmail(string toEmail, string subject, string htmlMessage)
+        public async Task SendEmail(Message message)
         {
             var client = new SendGridClient(APIKEY);
-            var to = new EmailAddress(toEmail);
-            var msg = MailHelper.CreateSingleEmail(Address, to, subject, null, htmlMessage);
+            var to = new EmailAddress(message.RecipientEmail);
+            var msg = MailHelper.CreateSingleEmail(Address, to, message.Subject, null, message.Content);
             var response = await client.SendEmailAsync(msg);
         }
     }

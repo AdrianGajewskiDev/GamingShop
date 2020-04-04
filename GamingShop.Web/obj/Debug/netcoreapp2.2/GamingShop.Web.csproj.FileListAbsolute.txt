@@ -50,3 +50,5 @@ C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\Gaming
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\GamingShop.Web.csproj.CopyComplete
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\GamingShop.Web.dll
 C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\GamingShop.Web.pdb
+C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\GamingShop.Web.csproj.CoreCompileInputs.cache
+C:\Users\adria\Projects\GamingShop\GamingShop.Web\obj\Debug\netcoreapp2.2\GamingShop.Web.genruntimeconfig.cache

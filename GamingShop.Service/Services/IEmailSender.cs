@@ -8,6 +8,6 @@ namespace GamingShop.Service
     {
         Task SendVerificationEmailAsync(ApplicationUser user, string subject, string link, string plainTextContent = null);
         Task SendOrderDetailsEmail(string toEmail, string subject, IEnumerable<Game> items, Address adress, decimal price);
-        Task SendEmail(string toEmail, string subject, string htmlMessage);
+        Task SendEmail(Message message);
     }
 }

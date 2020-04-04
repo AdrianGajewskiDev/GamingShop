@@ -5,6 +5,7 @@ using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -120,8 +121,20 @@ namespace GamingShop.Web.API.Controllers
             var jwtToken = _tokenWriter.CreateToken("Token", generatedToken, 1d);
 
             var redirectLink = $"{_options.ClientURL}resetPassword/{user.Id}/{jwtToken}";
+            var message = new Message
+            {
+                Content = $"<a href={redirectLink}>Click here to reset your password</a>",
+                Subject = "Reset Password",
+                Sent = DateTime.UtcNow,
+                SenderID = user.Id,
+                RecipientEmail = email,
+                RecipientID = user.Id
+            };
 
-            await _emailSender.SendEmail(email, "Reset Password", $"<a href={redirectLink}>Click here to reset your password</a>");
+            _dbContext.Messages.Add(message);
+
+            await _dbContext.SaveChangesAsync();
+            await _emailSender.SendEmail(message);
 
             return Ok();
         }

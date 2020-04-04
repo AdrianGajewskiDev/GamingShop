@@ -4,8 +4,10 @@ using GamingShop.Service.Extensions;
 using GamingShop.Service.Implementation;
 using GamingShop.Service.Services;
 using GamingShop.Web.Data;
+using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -63,6 +65,7 @@ namespace GamingShop.Web.API
                 options.AllowAnyHeader();
             }));
 
+
             services.AddSendGrid<SendGridEmailSender>();
 
             services.SetUpApplicationServices(conf => 
@@ -83,8 +86,6 @@ namespace GamingShop.Web.API
 
         }
 
-
-
         public void Configure(IApplicationBuilder app)
         {
             if (Environment.IsDevelopment())
@@ -92,6 +93,8 @@ namespace GamingShop.Web.API
                 app.UseDeveloperExceptionPage();
                 app.UseCors("DevCorsPolicy");
             }
+
+            app.UseAuthentication();
 
             app.UseMvc(routes => routes.MapRoute(
                 name:"default",
