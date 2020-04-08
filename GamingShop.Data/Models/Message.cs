@@ -10,6 +10,7 @@ namespace GamingShop.Data.Models
         public string RecipientEmail { get; set; }
         public string Content { get; set; }
         public string Subject { get; set; }
+        public bool Read { get; set; }
         public DateTime Sent { get; set; }
     }
 }
