@@ -91,12 +91,13 @@ namespace GamingShop.Web.API.Controllers
         public async Task<IActionResult> Login(LoginModel model)
         {
             var user = await _userManager.FindByNameAsync(model.Username);
+            var userID = user.Id;
 
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 var token = _tokenWriter.CreateToken("UserID", user.Id, 5d);
 
-                return Ok(new { token });
+                return Ok(new { token, userID});
             }
             else
                 return BadRequest(new { message = "Incorect username or password!" });

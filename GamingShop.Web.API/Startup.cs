@@ -3,6 +3,7 @@ using GamingShop.Service;
 using GamingShop.Service.Extensions;
 using GamingShop.Service.Implementation;
 using GamingShop.Service.Services;
+using GamingShop.Web.API.Helpers;
 using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Builder;
@@ -72,9 +73,11 @@ namespace GamingShop.Web.API
             {
                 conf.AddScoped<IImage, ImageService>();
                 conf.AddScoped<ISale, SalesService>();
+                conf.AddScoped<IMessage, MessageService>();
             });
 
             services.AddSingleton<JWTToken>();
+            services.AddTransient<MessagesDatabaseSeeder>();
 
             services.SetUpJWT(conf => 
             {
