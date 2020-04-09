@@ -1,4 +1,5 @@
-﻿using GamingShop.Data;
+﻿using AutoMapper;
+using GamingShop.Data;
 using GamingShop.Data.Models;
 using GamingShop.Service;
 using GamingShop.Service.Services;
@@ -7,6 +8,7 @@ using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -27,6 +29,8 @@ namespace GamingShop.Web.API.Controllers
         private readonly ApplicationOptions _options;
         private readonly IImage _imageService;
         private readonly ISale _saleService;
+        private IMapper _mapper;
+        private readonly LinkGenerator _generator;
 
         /// <summary>
         /// Default constructor
@@ -36,12 +40,14 @@ namespace GamingShop.Web.API.Controllers
         /// <param name="image">A Image service</param>
         /// <param name="sale">A Sale Service</param>
         public SalesController(ApplicationDbContext context, IOptions<ApplicationOptions> options,
-            IImage image, ISale sale)
+            IImage image, ISale sale, IMapper mapper, LinkGenerator generator)
         {
             _context = context;
             _options = options.Value;
             _imageService = image;
             _saleService = sale;
+            _mapper = mapper;
+            _generator = generator;
         }
 
         /// <summary>
@@ -51,37 +57,23 @@ namespace GamingShop.Web.API.Controllers
         /// <returns>Returns game id to client to pass it to Upload image function</returns>
         [HttpPost("AddGame")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<int> AddGame(NewGameModel game)
+        public async Task<ActionResult<int>> AddGame(NewGameModel game)
         {
             var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
-            var dayOfLaunch = game.LaunchDate.Split("/")[0];
-            var monthOfLaunch = game.LaunchDate.Split("/")[1];
-            var yearOfLaunch = game.LaunchDate.Split("/")[2];
+            var result = _mapper.Map<Game>(game);
 
-            Game newGame = new Game
-            {
-                DayOfLaunch = dayOfLaunch,
-                Description = game.Description,
-                ImageUrl = game.ImageUrl,
-                MonthOfLaunch = monthOfLaunch,
-                Pegi = game.Pegi,
-                Platform = game.Platform,
-                Price = game.Price,
-                Producent = game.Producent,
-                Title = game.Title,
-                Type = game.Type,
-                YearOfLaunch = yearOfLaunch,
-                OwnerID = userID,
-                Posted = DateTime.UtcNow,
-                Sold = false
-            };
+            result.DayOfLaunch = game.LaunchDate.Split("/")[0];
+            result.MonthOfLaunch = game.LaunchDate.Split("/")[1];
+            result.YearOfLaunch = game.LaunchDate.Split("/")[2];
+            result.OwnerID = userID;
 
-            await _context.Games.AddAsync(newGame);
+            var link = _generator.GetPathByAction("AddGame", "Sales");
+            await _context.Games.AddAsync(result);
 
             await _context.SaveChangesAsync();
 
-            return newGame.ID;
+            return Created(link, result.ID);
         }
 
         /// <summary>

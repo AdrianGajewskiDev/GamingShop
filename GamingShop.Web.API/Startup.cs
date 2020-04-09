@@ -1,14 +1,14 @@
-﻿using GamingShop.Data.Models;
+﻿using AutoMapper;
+using GamingShop.Data.Models;
 using GamingShop.Service;
 using GamingShop.Service.Extensions;
 using GamingShop.Service.Implementation;
 using GamingShop.Service.Services;
 using GamingShop.Web.API.Helpers;
+using GamingShop.Web.API.Profiles;
 using GamingShop.Web.Data;
-using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +30,7 @@ namespace GamingShop.Web.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.Configure<ApplicationOptions>(config => 
             {
                 config.Secret_Key = Configuration["JWT_Config:Secret_Key"].ToString();
@@ -38,6 +39,10 @@ namespace GamingShop.Web.API
                 config.JWTSecretKey = Configuration["JWT_Config:Secret_Key"];
                 config.ImagesPath = @"C:\Users\adria\Desktop\AngularApp\GamingShop_Frontend\GamingShop-Frontend\src\assets\img";
             });
+
+           
+
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(setup =>
             {
@@ -86,6 +91,18 @@ namespace GamingShop.Web.API
                 conf.ValidateAudience = false;
                 conf.Key = Configuration["JWT_Config:Secret_Key"];
             });
+
+            var ServiceProvider = services.BuildServiceProvider();
+
+
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new UserProfile((IImage)ServiceProvider.GetService<IImage>()));
+                mc.AddProfile(new GameProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
 
         }
 

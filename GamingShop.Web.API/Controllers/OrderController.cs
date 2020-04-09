@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using AutoMapper;
 using GamingShop.Data.Models;
 using GamingShop.Service;
 using GamingShop.Web.API.Models;
@@ -27,6 +28,7 @@ namespace GamingShop.Web.API.Controllers
         private IOrder _orderService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Default constructor
@@ -39,7 +41,7 @@ namespace GamingShop.Web.API.Controllers
         /// <param name="orderService">A order service</param>
         public OrderController(ICart cartService, IGame gameService,
             ApplicationDbContext dbContext, UserManager<ApplicationUser> manager,
-            IEmailSender sender, IOrder orderService)
+            IEmailSender sender, IOrder orderService, IMapper mapper)
         {
             _cartService = cartService;
             _gameService = gameService;
@@ -47,6 +49,8 @@ namespace GamingShop.Web.API.Controllers
             _userManager = manager;
             _emailSender = sender;
             _orderService = orderService;
+            _mapper = mapper;
+
         }
         
         /// <summary>
@@ -62,30 +66,16 @@ namespace GamingShop.Web.API.Controllers
             IEnumerable<Game> cartItems = _cartService.GetGames(id);
 
             var userID = User.Claims.First(x => x.Type == "UserID").Value;
-
             var user = await _userManager.FindByIdAsync(userID);
-
             var itemsOwner = await _userManager.FindByIdAsync(cartItems.First().OwnerID);
-
-            var email = (string.IsNullOrEmpty(model.AlternativeEmailAdress)) ? user.Email : model.AlternativeEmailAdress;
-
-            var phoneNumber = (string.IsNullOrEmpty(model.AlternativePhoneNumber)) ? user.PhoneNumber : model.AlternativePhoneNumber;
-
             var totalPrice = CalculateTotalPrice(cartItems);
 
-            var result = await _dbContext.Orders.AddAsync(new Order
-            {
-                CartID = id,
-                City = model.City,
-                Country = model.Country,
-                Email = email,
-                PhoneNumber = phoneNumber,
-                Street = model.Street,
-                TotalPrice = totalPrice,
-                Placed = DateTime.Now,
-            });
+            model.Placed = DateTime.UtcNow;
+            model.TotalPrice = totalPrice;
+            model.Email = (string.IsNullOrEmpty(model.AlternativeEmailAdress)) ? user.Email : model.AlternativeEmailAdress;
+            model.PhoneNumber = (string.IsNullOrEmpty(model.AlternativePhoneNumber)) ? user.PhoneNumber : model.AlternativePhoneNumber;
 
-
+            var result = _mapper.Map<Order>(model);
             var orderID = _dbContext.Orders.Last().ID;
 
             string gameTitles = string.Empty;
@@ -114,8 +104,7 @@ namespace GamingShop.Web.API.Controllers
 
             await _dbContext.SaveChangesAsync();
 
-
-            await _emailSender.SendOrderDetailsEmail(email, "Order",cartItems, new Address { Street = model.Street, City = model.City, Country = model.Country, PhoneNumber = phoneNumber }, totalPrice);
+            await _emailSender.SendOrderDetailsEmail(model.Email, "Order",cartItems, new Address { Street = model.Street, City = model.City, Country = model.Country, PhoneNumber = model.PhoneNumber }, totalPrice);
 
             await _emailSender.SendEmail(message);
 

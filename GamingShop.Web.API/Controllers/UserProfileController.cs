@@ -12,6 +12,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using GamingShop.Service.Services;
+using AutoMapper;
 
 namespace GamingShop.Web.API.Controllers
 {
@@ -25,7 +26,7 @@ namespace GamingShop.Web.API.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly ApplicationOptions _options;
-        private readonly IImage _imageService;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Default constructor
@@ -35,12 +36,12 @@ namespace GamingShop.Web.API.Controllers
         /// <param name="options">Application options</param>
         /// <param name="imageService">Image service</param>
         public UserProfileController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, 
-            IOptions<ApplicationOptions> options, IImage imageService)
+            IOptions<ApplicationOptions> options, IMapper mapper)
         {
             _userManager = userManager;
             _dbContext = context;
             _options = options.Value;
-            _imageService = imageService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -57,17 +58,8 @@ namespace GamingShop.Web.API.Controllers
 
             if (user != null)
             {
-
-                var response = new ApplicationUserResponseModel
-                {
-                    Email = user.Email,
-                    EmailConfirmed = user.EmailConfirmed,
-                    Password = user.Password,
-                    PhoneNumber = user.PhoneNumber,
-                    UserName = user.UserName,
-                    ID = userID,
-                    ImageUrl = _imageService.GetImagePathForUser(userID)
-                };
+                var response = _mapper.Map<ApplicationUserResponseModel>(user);
+            
                 return response;
             }
             else

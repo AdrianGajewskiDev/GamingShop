@@ -7,6 +7,9 @@ namespace GamingShop.Web.API.Models
 {
     public class OrderModel
     {
+        public int CartID { get; set; }
+        public string Email { get; set; }
+        public string PhoneNumber { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Country { get; set; }
@@ -16,5 +19,7 @@ namespace GamingShop.Web.API.Models
         public string PostalCode { get; set; }
         public string AlternativeEmailAdress { get; set; }
         public string AlternativePhoneNumber { get; set; }
+        public decimal TotalPrice { get; set; }
+        public DateTime Placed { get; set; }
     }
 }
