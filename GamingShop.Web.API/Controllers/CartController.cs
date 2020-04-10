@@ -1,6 +1,7 @@
 ﻿using GamingShop.Data.Models;
 using GamingShop.Service;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -40,15 +41,23 @@ namespace GamingShop.Web.API.Controllers
         /// <returns>Returns all items in cart</returns>
         [HttpGet("GetItemsInCart")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IEnumerable<Game>> GetItemsInCart()
+        public async Task<ActionResult<IEnumerable<Game>>> GetItemsInCart()
         {
-            var userID = User.Claims.First(x => x.Type == "UserID").Value;
+            try
+            {
+                var userID = User.Claims.First(x => x.Type == "UserID").Value;
 
-            var user = await _userManager.FindByIdAsync(userID);
+                var user = await _userManager.FindByIdAsync(userID);
 
-            var games = _cartService.GetGames(user.CartID);
+                var games = _cartService.GetGames(user.CartID);
 
-            return games;
+                return games.ToArray();
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happend on server: {ex.Message}");
+            }
+
         }
 
         /// <summary>
@@ -78,13 +87,21 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveFromCart([FromBody]int ID)
         {
-            var userID = User.Claims.First(x => x.Type == "UserID").Value;
-            var user = await _userManager.FindByIdAsync(userID);
-            var game = _cartService.GetGames(user.CartID).Where(g => g.ID == ID).First();
+            try
+            {
+                var userID = User.Claims.First(x => x.Type == "UserID").Value;
+                var user = await _userManager.FindByIdAsync(userID);
+                var game = _cartService.GetGames(user.CartID).Where(g => g.ID == ID).First();
 
-            _cartService.RemoveFormCart(user.CartID, game);
+                _cartService.RemoveFormCart(user.CartID, game);
 
-            return Ok();
+                return Ok();
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happend on server: {ex.Message}");
+            }
+           
         }
 
         /// <summary>
@@ -93,12 +110,20 @@ namespace GamingShop.Web.API.Controllers
         /// <returns></returns>
         [HttpGet("GetCardID")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<int> GetCardID()
+        public async Task<ActionResult<int>> GetCardID()
         {
-            var userID = User.Claims.First(x => x.Type == "UserID").Value;
-            var user = await _userManager.FindByIdAsync(userID);
+            try
+            {
+                var userID = User.Claims.First(x => x.Type == "UserID").Value;
+                var user = await _userManager.FindByIdAsync(userID);
 
-            return user.CartID;
+                return user.CartID;
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happend on server: {ex.Message}");
+            }
+          
         }
     }
 }

@@ -63,56 +63,64 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> PlaceOrder(int id, [FromBody] OrderModel model)
         {
-            IEnumerable<Game> cartItems = _cartService.GetGames(id);
-
-            var userID = User.Claims.First(x => x.Type == "UserID").Value;
-            var user = await _userManager.FindByIdAsync(userID);
-            var itemsOwner = await _userManager.FindByIdAsync(cartItems.First().OwnerID);
-            var totalPrice = CalculateTotalPrice(cartItems);
-
-            model.Placed = DateTime.UtcNow;
-            model.TotalPrice = totalPrice;
-            model.Email = (string.IsNullOrEmpty(model.AlternativeEmailAdress)) ? user.Email : model.AlternativeEmailAdress;
-            model.PhoneNumber = (string.IsNullOrEmpty(model.AlternativePhoneNumber)) ? user.PhoneNumber : model.AlternativePhoneNumber;
-
-            var result = _mapper.Map<Order>(model);
-            var orderID = _dbContext.Orders.Last().ID;
-
-            string gameTitles = string.Empty;
-
-            foreach (var item in cartItems)
+            try
             {
-                gameTitles = gameTitles.Concat(item.Title).ToString();
-                _dbContext.OrderItems.Add(new OrderItem
+                IEnumerable<Game> cartItems = _cartService.GetGames(id);
+
+                var userID = User.Claims.First(x => x.Type == "UserID").Value;
+                var user = await _userManager.FindByIdAsync(userID);
+                var itemsOwner = await _userManager.FindByIdAsync(cartItems.First().OwnerID);
+                var totalPrice = CalculateTotalPrice(cartItems);
+
+                model.Placed = DateTime.UtcNow;
+                model.TotalPrice = totalPrice;
+                model.Email = (string.IsNullOrEmpty(model.AlternativeEmailAdress)) ? user.Email : model.AlternativeEmailAdress;
+                model.PhoneNumber = (string.IsNullOrEmpty(model.AlternativePhoneNumber)) ? user.PhoneNumber : model.AlternativePhoneNumber;
+
+                var result = _mapper.Map<Order>(model);
+                var orderID = _dbContext.Orders.Last().ID;
+
+                string gameTitles = string.Empty;
+
+                foreach (var item in cartItems)
                 {
-                    GameID = item.ID,
-                    CartID = user.CartID,
-                    OrderID = orderID
-                });
+                    gameTitles = gameTitles.Concat(item.Title).ToString();
+                    _dbContext.OrderItems.Add(new OrderItem
+                    {
+                        GameID = item.ID,
+                        CartID = user.CartID,
+                        OrderID = orderID
+                    });
+                }
+
+                var message = new Message
+                {
+                    Content = $"Ordered items: {gameTitles}",
+                    RecipientEmail = itemsOwner.Email,
+                    RecipientID = itemsOwner.Id,
+                    SenderID = user.Id,
+                    Sent = DateTime.UtcNow,
+                    Subject = $"A {user.UserName} ordered your game(s)"
+                };
+                _dbContext.Messages.Add(message);
+
+                await _dbContext.SaveChangesAsync();
+
+                await _emailSender.SendOrderDetailsEmail(model.Email, "Order", cartItems, new Address { Street = model.Street, City = model.City, Country = model.Country, PhoneNumber = model.PhoneNumber }, totalPrice);
+
+                await _emailSender.SendEmail(message);
+
+                await _cartService.ClearCart(id);
+
+                await _orderService.MarkGameAsSold(cartItems);
+
+                return Ok();
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
             }
 
-            var message = new Message 
-            {
-                Content = $"Ordered items: {gameTitles}",
-                RecipientEmail = itemsOwner.Email,
-                RecipientID = itemsOwner.Id,
-                SenderID = user.Id,
-                Sent = DateTime.UtcNow,
-                Subject = $"A {user.UserName} ordered your game(s)"
-            };
-            _dbContext.Messages.Add(message);
-
-            await _dbContext.SaveChangesAsync();
-
-            await _emailSender.SendOrderDetailsEmail(model.Email, "Order",cartItems, new Address { Street = model.Street, City = model.City, Country = model.Country, PhoneNumber = model.PhoneNumber }, totalPrice);
-
-            await _emailSender.SendEmail(message);
-
-            await _cartService.ClearCart(id);
-
-            await _orderService.MarkGameAsSold(cartItems);
-
-            return Ok();
         }
 
         /// <summary>
@@ -121,23 +129,29 @@ namespace GamingShop.Web.API.Controllers
         /// <returns>Returns an Array of <see cref="LatestOrderModel" /> items</returns>
         [HttpGet("LatestOrders")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IEnumerable<LatestOrderModel>> GetLatestOrders()
+        public async Task<ActionResult<IEnumerable<LatestOrderModel>>> GetLatestOrders()
         {
-            var userID = User.Claims.First(c => c.Type == "UserID").Value;
-            var user = await _userManager.FindByIdAsync(userID);
-            var cardID = user.CartID;
-            var latestOrders = _orderService.GetAllByCartID(cardID);
-
-            var orders = latestOrders.Select(order => new LatestOrderModel 
+            try
             {
-                Placed = order.Placed.ToShortDateString(),
-                City =  order.City,
-                Street = order.Street,
-                Games = _orderService.GetGamesFromOrder(order.ID),
-                Price = order.TotalPrice
-            });
+                var userID = User.Claims.First(c => c.Type == "UserID").Value;
+                var user = await _userManager.FindByIdAsync(userID);
+                var cardID = user.CartID;
+                var latestOrders = _orderService.GetAllByCartID(cardID);
 
-            return orders.ToArray();
+                List<LatestOrderModel> results = new List<LatestOrderModel>();
+
+                foreach (var order in latestOrders)
+                {
+                    results.Add(_mapper.Map<LatestOrderModel>(order));
+                }
+
+                return results;
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
+            }
+        
         }
 
         /// <summary>

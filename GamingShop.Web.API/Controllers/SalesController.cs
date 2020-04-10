@@ -59,21 +59,28 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<int>> AddGame(NewGameModel game)
         {
-            var userID = User.FindFirst(c => c.Type == "UserID").Value;
+            try
+            {
+                var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
-            var result = _mapper.Map<Game>(game);
+                var result = _mapper.Map<Game>(game);
 
-            result.DayOfLaunch = game.LaunchDate.Split("/")[0];
-            result.MonthOfLaunch = game.LaunchDate.Split("/")[1];
-            result.YearOfLaunch = game.LaunchDate.Split("/")[2];
-            result.OwnerID = userID;
+                result.DayOfLaunch = game.LaunchDate.Split("/")[0];
+                result.MonthOfLaunch = game.LaunchDate.Split("/")[1];
+                result.YearOfLaunch = game.LaunchDate.Split("/")[2];
+                result.OwnerID = userID;
 
-            var link = _generator.GetPathByAction("AddGame", "Sales");
-            await _context.Games.AddAsync(result);
+                var link = _generator.GetPathByAction("AddGame", "Sales");
+                await _context.Games.AddAsync(result);
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-            return Created(link, result.ID);
+                return Created(link, result.ID);
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -86,11 +93,18 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> PostGameImage(IFormFile image, int id)
         {
-            var userID = User.FindFirst(c => c.Type == "UserID").Value;
+            try
+            {
+                var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
-            await _imageService.UploadImageAsync(id,image, ImageType.GameCover);
+                await _imageService.UploadImageAsync(id, image, ImageType.GameCover);
 
-            return Ok();
+                return Ok();
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -103,11 +117,19 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddUserProfileImage(IFormFile image)
         {
-            var userID = User.FindFirst(c => c.Type == "UserID").Value;
+            try
+            {
+                var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
-            await _imageService.UploadImageAsync(userID, image, ImageType.UserProfile);
+                await _imageService.UploadImageAsync(userID, image, ImageType.UserProfile);
 
-            return Ok();
+                return Ok();
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
+            }
+
         }
 
         /// <summary>
@@ -116,18 +138,27 @@ namespace GamingShop.Web.API.Controllers
         /// <returns>Returns list of user sales</returns>
         [HttpGet("UserSales")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IEnumerable<SaleModel>> GetUserSale()
+        public async Task<ActionResult<IEnumerable<SaleModel>>> GetUserSale()
         {
-            var userID = User.FindFirst(c => c.Type == "UserID").Value;
-
-            List<SaleModel> sales = new List<SaleModel>();
-
-            await Task.Run(() =>
+            try
             {
-                sales = _saleService.GetUserSales(userID).ToList();
-            });
+                var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
-            return sales;
+                List<SaleModel> sales = new List<SaleModel>();
+
+                await Task.Run(() =>
+                {
+                    sales = _saleService.GetUserSales(userID).ToList();
+                });
+
+                return sales;
+
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
+            }
+
         }
     }
 }

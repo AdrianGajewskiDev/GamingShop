@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Identity;
 using GamingShop.Service.Services;
 using GamingShop.Web.API.Models;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
 
 namespace GamingShop.Web.API.Controllers
 {
@@ -25,6 +27,8 @@ namespace GamingShop.Web.API.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IGame _gamesService;
         private readonly IImage _imageService;
+        private readonly IMapper _mapper;
+
 
         /// <summary>
         /// Default constructor
@@ -33,12 +37,13 @@ namespace GamingShop.Web.API.Controllers
         /// <param name="gameService">A Game Service</param>
         /// <param name="userManager">A User Manager</param>
         /// <param name="image">A Image Service</param>
-        public GamesController(ApplicationDbContext context, IGame gameService, UserManager<ApplicationUser> userManager,IImage image)
+        public GamesController(ApplicationDbContext context, IGame gameService, UserManager<ApplicationUser> userManager,IImage image,IMapper mapper)
         {
             _context = context;
             _gamesService = gameService;
             _userManager = userManager;
             _imageService = image;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -48,24 +53,30 @@ namespace GamingShop.Web.API.Controllers
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<GameIndexResponseModel>>> GetGames()
         {
-            List<Game> games = new List<Game>();
-
-            await Task.Run(() => 
+            try
             {
-                games = _gamesService.GetAllAvailable().ToList();
-            });
 
-            var response = games.Select(game => new GameIndexResponseModel 
+                List<Game> games = new List<Game>();
+
+                await Task.Run(() =>
+                {
+                    games = _gamesService.GetAllAvailable().ToList();
+                });
+
+                List<GameIndexResponseModel> response = new List<GameIndexResponseModel>();
+
+                foreach (var game in games)
+                {
+                    response.Add(_mapper.Map<GameIndexResponseModel>(game));
+                }
+
+                return response;
+            }
+            catch (System.Exception ex)
             {
-                ID = game.ID,
-                ImageUrl =  _imageService.GetImageNameForGame(game.ID),
-                Platform = game.Platform,
-                Price = game.Price,
-                Producent = game.Producent,
-                Title = game.Title
-            });
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happend on server: {ex.Message}");
+            }
 
-            return response.ToArray();
         }
 
         /// <summary>
@@ -76,28 +87,35 @@ namespace GamingShop.Web.API.Controllers
         [HttpGet("Search/{searchQuery}")]
         public async Task<ActionResult<IEnumerable<GameIndexResponseModel>>> GetBySearchQuery(string searchQuery)
         {
-            if (searchQuery == string.Empty)
-                return NotFound();
 
-            List<Game> games = new List<Game>();
 
-            await Task.Run(() =>
+            try
             {
-                 games = _gamesService.GetAllBySearchQuery(searchQuery).ToList();
-            }); 
 
+                if (searchQuery == string.Empty)
+                    return NotFound();
 
-            var response = games.Select(game => new GameIndexResponseModel
+                List<Game> games = new List<Game>();
+
+                await Task.Run(() =>
+                {
+                    games = _gamesService.GetAllBySearchQuery(searchQuery).ToList();
+                });
+
+                List<GameIndexResponseModel> response = new List<GameIndexResponseModel>();
+
+                foreach (var game in games)
+                {
+                    response.Add(_mapper.Map<GameIndexResponseModel>(game));
+                }
+
+                return response;
+            }
+            catch (System.Exception ex)
             {
-                ID = game.ID,
-                ImageUrl = _imageService.GetImageNameForGame(game.ID),
-                Platform = game.Platform,
-                Price = game.Price,
-                Producent = game.Producent,
-                Title = game.Title
-            });
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happend on server: {ex.Message}");
+            }
 
-            return response.ToArray();
         }
 
         /// <summary>
@@ -108,43 +126,39 @@ namespace GamingShop.Web.API.Controllers
         [HttpGet("GetGame/{id}")]
         public async Task<ActionResult<GameDetailsResponseModel>> GetGame(int id)
         {
-            var game = _gamesService.GetByID(id);
-
-            if (game == null)
+            try
             {
-                return NotFound();
+                var game = _gamesService.GetByID(id);
+
+                if (game == null)
+                {
+                    return NotFound();
+                }
+
+                string ownerUsername = string.Empty;
+
+                if (!string.IsNullOrEmpty(game.OwnerID))
+                {
+                    var owner = await _userManager.FindByIdAsync(game.OwnerID);
+                    ownerUsername = owner.UserName;
+
+                }
+                else
+                {
+                    ownerUsername = "Unknown";
+                }
+
+                var response = _mapper.Map<GameDetailsResponseModel>(game);
+                response.OwnerUsername = ownerUsername;
+
+                return response;
+
             }
-
-            string ownerUsername = string.Empty;
-
-            if (!string.IsNullOrEmpty(game.OwnerID))
+            catch (System.Exception ex)
             {
-                var owner = await _userManager.FindByIdAsync(game.OwnerID);
-                ownerUsername = owner.UserName;
-
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happend on server: {ex.Message}");
             }
-            else
-            {
-                ownerUsername = "Unknown";
-            }
-
-            var respone = new GameDetailsResponseModel
-            {
-                BestSeller = game.BestSeller,
-                Description = game.Description,
-                ImageUrl = _imageService.GetImageNameForGame(game.ID),
-                LaunchDate = $"{game.DayOfLaunch}/{game.MonthOfLaunch}/{game.YearOfLaunch}",
-                OwnerUsername = ownerUsername,
-                Pegi = game.Pegi,
-                Platform = game.Platform,
-                Price = game.Price,
-                Producent = game.Producent,
-                Title = game.Title,
-                Type = game.Type,
-                Sold = game.Sold
-            };
-
-            return respone;
+            
         }
 
         /// <summary>
@@ -203,16 +217,26 @@ namespace GamingShop.Web.API.Controllers
         [HttpDelete("DeleteGame/{id}")]
         public async Task<ActionResult<Game>> DeleteGame(int id)
         {
-            var game = await _context.Games.FindAsync(id);
-            if (game == null)
+            try
             {
-                return NotFound();
+
+                var game = await _context.Games.FindAsync(id);
+                if (game == null)
+                {
+                    return NotFound();
+                }
+
+                _context.Games.Remove(game);
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happend on server: {ex.Message}");
             }
 
-            _context.Games.Remove(game);
-            await _context.SaveChangesAsync();
 
-            return Ok();
         }
 
         /// <summary>
