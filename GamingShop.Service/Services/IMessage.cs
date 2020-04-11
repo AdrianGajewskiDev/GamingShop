@@ -1,5 +1,6 @@
 ﻿using GamingShop.Data.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GamingShop.Service.Services
 {
@@ -7,5 +8,6 @@ namespace GamingShop.Service.Services
     {
         IEnumerable<Message> GetAllSentByUser(string userID);
         IEnumerable<Message> GetAllSentToUser(string userID);
+        Task<Message> GetByIDAsync(int id);
     }
 }

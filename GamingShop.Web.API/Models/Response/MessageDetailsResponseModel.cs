@@ -1,12 +1,8 @@
-﻿using System;
-
-namespace GamingShop.Web.API.Models
+﻿namespace GamingShop.Web.API.Models.Response
 {
-    public class NewMessage
+    public class MessageDetailsResponseModel
     {
- 
         public int ID { get; set; }
-        public int GameID { get; set; }
         public string SenderID { get; set; }
         public string SenderEmail { get; set; }
         public string RecipientID { get; set; }
@@ -14,7 +10,6 @@ namespace GamingShop.Web.API.Models
         public string Content { get; set; }
         public string Subject { get; set; }
         public bool Read { get; set; }
-        public bool Replying { get; set; }
-        public DateTime Sent { get; set; }
+        public string Sent { get; set; }
     }
 }

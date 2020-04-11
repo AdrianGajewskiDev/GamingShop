@@ -1,4 +1,5 @@
-﻿using GamingShop.Data.Models;
+﻿using AutoMapper;
+using GamingShop.Data.Models;
 using GamingShop.Service;
 using GamingShop.Service.Services;
 using GamingShop.Web.API.Models;
@@ -25,17 +26,19 @@ namespace GamingShop.Web.API.Controllers
         private readonly IMessage _messageService;
         private readonly IGame _gameService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public MessageController(ApplicationDbContext context, IMessage service, 
-            IGame gameService, UserManager<ApplicationUser> userManager)
+        public MessageController(ApplicationDbContext context, IMessage service,
+            IGame gameService, UserManager<ApplicationUser> userManager,IMapper mapper)
         {
             _dbContext = context;
             _messageService = service;
             _gameService = gameService;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -47,16 +50,18 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> SendMessage([FromBody]NewMessage message)
         {
-            try
-            {
-                if (message == null)
-                    return BadRequest("Invalid message model");
+            if (message == null)
+                return BadRequest("Invalid message model");
 
+            Message msg;
+
+            if(message.Replying ==false)
+            {
                 var recipientID = _gameService.GetByID(message.GameID).OwnerID;
                 var recipient = await _userManager.FindByIdAsync(recipientID);
                 var sender = await _userManager.FindByIdAsync(message.SenderID);
 
-                var msg = new Message
+                msg = new Message
                 {
                     Content = message.Content,
                     Read = false,
@@ -68,20 +73,30 @@ namespace GamingShop.Web.API.Controllers
                     SenderEmail = sender.Email
 
                 };
-
-
-                _dbContext.Messages.Add(msg);
-
-                await _dbContext.SaveChangesAsync();
-
-                return Ok();
-
-
             }
-            catch (System.Exception ex)
+            else
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
+                msg = new Message
+                {
+                    Content = message.Content,
+                    Read = false,
+                    RecipientEmail = message.RecipientEmail,
+                    RecipientID = message.RecipientID,
+                    SenderID = message.SenderID,
+                    Sent = DateTime.UtcNow,
+                    Subject = message.Subject,
+                    SenderEmail = message.SenderEmail
+
+                };
             }
+           
+
+
+            _dbContext.Messages.Add(msg);
+
+            await _dbContext.SaveChangesAsync();
+
+            return Ok();
 
         }
 
@@ -93,32 +108,45 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public ActionResult<MessageResponseModel> GetMessages()
         {
-            try
+            var userID = User.FindFirst(x => x.Type == "UserID").Value;
+
+            var messagesSentByUser = _messageService.GetAllSentByUser(userID);
+            var messagesSentToUser = _messageService.GetAllSentToUser(userID);
+            var newMessages = messagesSentToUser.Where(msg => msg.Read == false);
+
+            var response = new MessageResponseModel
             {
-                var userID = User.FindFirst(x => x.Type == "UserID").Value;
+                MessagesSentByUser = messagesSentByUser.OrderByDescending(x => x.Sent),
+                MessagesSentToUser = messagesSentToUser.OrderByDescending(x => x.Sent),
+                NewMessages = newMessages.OrderByDescending(x => x.Sent),
+                NewMessagesAvailable = newMessages.Count()
+            };
 
-                var messagesSentByUser = _messageService.GetAllSentByUser(userID);
-                var messagesSentToUser = _messageService.GetAllSentToUser(userID);
-                var newMessages = messagesSentToUser.Where(msg => msg.Read == false);
-
-                var response = new MessageResponseModel
-                {
-                    MessagesSentByUser = messagesSentByUser,
-                    MessagesSentToUser = messagesSentToUser,
-                    NewMessages = newMessages,
-                    NewMessagesAvailable = newMessages.Count()
-                };
-
-                return response;
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
+            return response;
 
         }
 
+        /// <summary>
+        /// Gets a message details
+        /// </summary>
+        /// <param name="id">An id of the message to get</param>
+        /// <returns>Returns message details</returns>
+        [HttpGet("ByID/{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<MessageDetailsResponseModel>> GetByMessageByID(int id)
+        {
+            var result = await _messageService.GetByIDAsync(id);
 
+            if(result != null)
+            {
+                var response = _mapper.Map<MessageDetailsResponseModel>(result);
+                
+                return response;
 
+            }
+
+            
+            return NotFound();
+        }
     }
 }

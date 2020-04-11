@@ -53,9 +53,6 @@ namespace GamingShop.Web.API.Controllers
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<GameIndexResponseModel>>> GetGames()
         {
-            try
-            {
-
                 List<Game> games = new List<Game>();
 
                 await Task.Run(() =>
@@ -71,12 +68,6 @@ namespace GamingShop.Web.API.Controllers
                 }
 
                 return response;
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happend on server: {ex.Message}");
-            }
-
         }
 
         /// <summary>
@@ -87,10 +78,6 @@ namespace GamingShop.Web.API.Controllers
         [HttpGet("Search/{searchQuery}")]
         public async Task<ActionResult<IEnumerable<GameIndexResponseModel>>> GetBySearchQuery(string searchQuery)
         {
-
-
-            try
-            {
 
                 if (searchQuery == string.Empty)
                     return NotFound();
@@ -110,11 +97,6 @@ namespace GamingShop.Web.API.Controllers
                 }
 
                 return response;
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happend on server: {ex.Message}");
-            }
 
         }
 
@@ -126,8 +108,6 @@ namespace GamingShop.Web.API.Controllers
         [HttpGet("GetGame/{id}")]
         public async Task<ActionResult<GameDetailsResponseModel>> GetGame(int id)
         {
-            try
-            {
                 var game = _gamesService.GetByID(id);
 
                 if (game == null)
@@ -152,13 +132,6 @@ namespace GamingShop.Web.API.Controllers
                 response.OwnerUsername = ownerUsername;
 
                 return response;
-
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happend on server: {ex.Message}");
-            }
-            
         }
 
         /// <summary>
@@ -217,8 +190,6 @@ namespace GamingShop.Web.API.Controllers
         [HttpDelete("DeleteGame/{id}")]
         public async Task<ActionResult<Game>> DeleteGame(int id)
         {
-            try
-            {
 
                 var game = await _context.Games.FindAsync(id);
                 if (game == null)
@@ -230,11 +201,6 @@ namespace GamingShop.Web.API.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok();
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happend on server: {ex.Message}");
-            }
 
 
         }

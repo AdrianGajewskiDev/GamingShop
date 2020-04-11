@@ -43,8 +43,6 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<IEnumerable<Game>>> GetItemsInCart()
         {
-            try
-            {
                 var userID = User.Claims.First(x => x.Type == "UserID").Value;
 
                 var user = await _userManager.FindByIdAsync(userID);
@@ -52,12 +50,6 @@ namespace GamingShop.Web.API.Controllers
                 var games = _cartService.GetGames(user.CartID);
 
                 return games.ToArray();
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happend on server: {ex.Message}");
-            }
-
         }
 
         /// <summary>
@@ -87,8 +79,6 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveFromCart([FromBody]int ID)
         {
-            try
-            {
                 var userID = User.Claims.First(x => x.Type == "UserID").Value;
                 var user = await _userManager.FindByIdAsync(userID);
                 var game = _cartService.GetGames(user.CartID).Where(g => g.ID == ID).First();
@@ -96,12 +86,6 @@ namespace GamingShop.Web.API.Controllers
                 _cartService.RemoveFormCart(user.CartID, game);
 
                 return Ok();
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happend on server: {ex.Message}");
-            }
-           
         }
 
         /// <summary>
@@ -112,18 +96,10 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<int>> GetCardID()
         {
-            try
-            {
                 var userID = User.Claims.First(x => x.Type == "UserID").Value;
                 var user = await _userManager.FindByIdAsync(userID);
 
                 return user.CartID;
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happend on server: {ex.Message}");
-            }
-          
         }
     }
 }

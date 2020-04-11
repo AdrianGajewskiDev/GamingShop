@@ -63,8 +63,6 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> PlaceOrder(int id, [FromBody] OrderModel model)
         {
-            try
-            {
                 IEnumerable<Game> cartItems = _cartService.GetGames(id);
 
                 var userID = User.Claims.First(x => x.Type == "UserID").Value;
@@ -115,12 +113,6 @@ namespace GamingShop.Web.API.Controllers
                 await _orderService.MarkGameAsSold(cartItems);
 
                 return Ok();
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
-
         }
 
         /// <summary>
@@ -131,8 +123,6 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<IEnumerable<LatestOrderModel>>> GetLatestOrders()
         {
-            try
-            {
                 var userID = User.Claims.First(c => c.Type == "UserID").Value;
                 var user = await _userManager.FindByIdAsync(userID);
                 var cardID = user.CartID;
@@ -146,12 +136,6 @@ namespace GamingShop.Web.API.Controllers
                 }
 
                 return results;
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
-        
         }
 
         /// <summary>

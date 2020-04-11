@@ -6,6 +6,7 @@ namespace GamingShop.Data.Models
     {
         public int ID { get; set; }
         public string SenderID { get; set; }
+        public string SenderEmail { get; set; }
         public string RecipientID { get; set; }
         public string RecipientEmail { get; set; }
         public string Content { get; set; }

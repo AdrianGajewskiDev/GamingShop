@@ -59,8 +59,6 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<int>> AddGame(NewGameModel game)
         {
-            try
-            {
                 var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
                 var result = _mapper.Map<Game>(game);
@@ -76,11 +74,6 @@ namespace GamingShop.Web.API.Controllers
                 await _context.SaveChangesAsync();
 
                 return Created(link, result.ID);
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
         }
 
         /// <summary>
@@ -93,18 +86,11 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> PostGameImage(IFormFile image, int id)
         {
-            try
-            {
                 var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
                 await _imageService.UploadImageAsync(id, image, ImageType.GameCover);
 
                 return Ok();
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
         }
 
         /// <summary>
@@ -117,19 +103,11 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddUserProfileImage(IFormFile image)
         {
-            try
-            {
                 var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
                 await _imageService.UploadImageAsync(userID, image, ImageType.UserProfile);
 
                 return Ok();
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
-
         }
 
         /// <summary>
@@ -140,8 +118,6 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<IEnumerable<SaleModel>>> GetUserSale()
         {
-            try
-            {
                 var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
                 List<SaleModel> sales = new List<SaleModel>();
@@ -153,11 +129,6 @@ namespace GamingShop.Web.API.Controllers
 
                 return sales;
 
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
 
         }
     }

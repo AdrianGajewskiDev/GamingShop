@@ -54,8 +54,6 @@ namespace GamingShop.Web.API.Controllers
         public async Task<ActionResult<ApplicationUserResponseModel>> GetUserProfile()
         {
 
-            try
-            {
                 string userID = User.Claims.First(c => c.Type == "UserID").Value;
 
                 var user = await _userManager.FindByIdAsync(userID);
@@ -68,11 +66,6 @@ namespace GamingShop.Web.API.Controllers
                 }
                 else
                     return BadRequest(new { message = "Cannot get user profile" });
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
 
         }
 
@@ -87,8 +80,6 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UpdateUsername(string username)
         {
-            try
-            {
                 string userID = User.Claims.First(c => c.Type == "UserID").Value;
 
                 var user = await _userManager.FindByIdAsync(userID);
@@ -102,11 +93,6 @@ namespace GamingShop.Web.API.Controllers
                 }
 
                 return BadRequest();
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
         }
 
         /// <summary>
@@ -118,8 +104,6 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UpdateEmail(string email)
         {
-            try
-            {
                 string userID = User.Claims.First(c => c.Type == "UserID").Value;
 
                 var user = await _userManager.FindByIdAsync(userID);
@@ -133,12 +117,6 @@ namespace GamingShop.Web.API.Controllers
                 }
 
                 return BadRequest();
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
-
         }
 
         /// <summary>
@@ -150,8 +128,6 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UpdatePhoneNumber(string phoneNumber)
         {
-            try
-            {
                 string userID = User.Claims.First(c => c.Type == "UserID").Value;
 
                 var user = await _userManager.FindByIdAsync(userID);
@@ -165,11 +141,6 @@ namespace GamingShop.Web.API.Controllers
                 }
 
                 return BadRequest();
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
         }
 
         #endregion
@@ -183,8 +154,6 @@ namespace GamingShop.Web.API.Controllers
         [Route("ConfirmEmail/{userID}")]
         public async Task<IActionResult> ConfirmEmail(string userID, string token)
         {
-            try
-            {
                 var user = await _userManager.FindByIdAsync(userID);
 
                 await _userManager.ConfirmEmailAsync(user, token);
@@ -194,11 +163,6 @@ namespace GamingShop.Web.API.Controllers
                 OpenUrl(_options.ClientURL + "/EmailConfirmation");
 
                 return new NoContentResult();
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
         }
 
         /// <summary>

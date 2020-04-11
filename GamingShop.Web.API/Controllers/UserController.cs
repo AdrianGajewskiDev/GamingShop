@@ -56,8 +56,6 @@ namespace GamingShop.Web.API.Controllers
         public async Task<ActionResult<ApplicationUser>> RegisterUser(RegisterModel registerModel)
         {
 
-            try
-            {
                 var newUser = _mapper.Map<ApplicationUser>(registerModel);
 
                 var result = await _userManager.CreateAsync(newUser, newUser.Password);
@@ -80,12 +78,6 @@ namespace GamingShop.Web.API.Controllers
                 }
                 else
                     return BadRequest("Failed to register new user");
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
-
         }
 
         /// <summary>
@@ -96,8 +88,6 @@ namespace GamingShop.Web.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            try
-            {
                 var user = await _userManager.FindByNameAsync(model.Username);
                 var userID = user.Id;
 
@@ -109,11 +99,6 @@ namespace GamingShop.Web.API.Controllers
                 }
                 else
                     return BadRequest(new { message = "Incorect username or password!" });
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
         }
 
         /// <summary>
@@ -124,8 +109,6 @@ namespace GamingShop.Web.API.Controllers
         [HttpPost("ForgetPassword/{email}")]
         public async Task<IActionResult> ForgetPassword(string email)
         {
-            try
-            {
 
                 var user = await _userManager.FindByEmailAsync(email);
 
@@ -153,12 +136,6 @@ namespace GamingShop.Web.API.Controllers
                 await _emailSender.SendEmail(message);
 
                 return Ok();
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
-
         }
 
         /// <summary>
@@ -170,8 +147,6 @@ namespace GamingShop.Web.API.Controllers
         [HttpPost("ForgetPasswordCallback")]
         public async Task<IActionResult> ForgetPasswordCallback([FromBody] ResetPasswordModel model)
         {
-            try
-            {
                 var user = await _userManager.FindByIdAsync(model.UserID);
 
                 var token = _tokenWriter.DecodeToken(model.JWTToken).First(c => c.Type == "Token").Value;
@@ -186,12 +161,6 @@ namespace GamingShop.Web.API.Controllers
                 }
 
                 return BadRequest("Something went wrong while reseting your password, try again");
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened on server: {ex.Message}");
-            }
-
         }
 
         /// <summary>

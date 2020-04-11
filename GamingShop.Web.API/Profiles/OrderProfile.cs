@@ -16,7 +16,8 @@ namespace GamingShop.Web.API.Profiles
 
             CreateMap<OrderModel, Order>();
             CreateMap<Order, LatestOrderModel>().ForMember(mem => mem.Games, opt => opt.MapFrom(src => orderService.GetAllByCartID(src.CartID)))
-                .ForMember(mem => mem.Price, opt => opt.MapFrom(src => src.TotalPrice));
+                .ForMember(mem => mem.Price, opt => opt.MapFrom(src => src.TotalPrice))
+                .ForMember(mem => mem.Placed, opt => opt.MapFrom(src => src.Placed.ToShortDateString()));
         }
     }
 }

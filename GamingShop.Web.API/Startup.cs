@@ -4,16 +4,20 @@ using GamingShop.Service;
 using GamingShop.Service.Extensions;
 using GamingShop.Service.Implementation;
 using GamingShop.Service.Services;
+using GamingShop.Web.API.Exceptions;
 using GamingShop.Web.API.Helpers;
 using GamingShop.Web.API.Profiles;
 using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
 
 namespace GamingShop.Web.API
 {
@@ -97,8 +101,10 @@ namespace GamingShop.Web.API
 
             var mappingConfig = new MapperConfiguration(mc =>
             {
-                mc.AddProfile(new UserProfile((IImage)ServiceProvider.GetService<IImage>()));
-                mc.AddProfile(new GameProfile());
+                mc.AddProfile(new UserProfile(ServiceProvider.GetService<IImage>()));
+                mc.AddProfile(new GameProfile(ServiceProvider.GetService<IImage>()));
+                mc.AddProfile(new OrderProfile(ServiceProvider.GetService<OrderService>()));
+                mc.AddProfile(new MessageProfile());
             });
 
             IMapper mapper = mappingConfig.CreateMapper();
@@ -113,6 +119,26 @@ namespace GamingShop.Web.API
                 app.UseDeveloperExceptionPage();
                 app.UseCors("DevCorsPolicy");
             }
+
+            app.UseExceptionHandler(errors => 
+            {
+                errors.Run(async ctx => 
+                {
+                    ctx.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                    ctx.Response.ContentType = "application/json";
+
+                    var contextFeature = ctx.Features.Get<IExceptionHandlerFeature>();
+                    if (contextFeature != null)
+                    {
+                        await ctx.Response.WriteAsync(new ExceptionInfo()
+                        {
+                            StatusCode = ctx.Response.StatusCode,
+                            Message = "Internal Server Error."
+                        }.ToString());
+                    }
+                });
+            });
 
             app.UseAuthentication();
 
