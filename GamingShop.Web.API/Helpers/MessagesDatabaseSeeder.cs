@@ -14,7 +14,7 @@ namespace GamingShop.Web.API.Helpers
             _dbContext = context;
         }
 
-        public void AddMessages(int amount, string senderID, string recipientID)
+        public void AddMessages(int amount, string senderID, string recipientID, string senderEmail, string recipientEmail)
         {
             List<Message> messages = new List<Message>();
 
@@ -24,11 +24,12 @@ namespace GamingShop.Web.API.Helpers
                 {
                     Content = $"Content-{i}",
                     Read = false,
-                    RecipientEmail = "",
+                    RecipientEmail = recipientEmail,
                     RecipientID = recipientID,
                     SenderID = senderID,
                     Sent = DateTime.UtcNow,
-                    Subject = $"Subject-{i}"
+                    Subject = $"Subject-{i}",
+                    SenderEmail = senderEmail
                 }) ;
             }
 

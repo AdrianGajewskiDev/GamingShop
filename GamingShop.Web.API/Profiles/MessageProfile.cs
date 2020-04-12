@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using GamingShop.Data.Models;
+using GamingShop.Web.API.Models;
 using GamingShop.Web.API.Models.Response;
+using System;
 
 namespace GamingShop.Web.API.Profiles
 {
@@ -9,7 +11,7 @@ namespace GamingShop.Web.API.Profiles
         public MessageProfile()
         {
             this.CreateMap<Message, MessageDetailsResponseModel>().ForMember(mem => mem.Sent, opt => opt.MapFrom(src => src.Sent.ToShortTimeString()));
-            this.CreateMap<NewMessageModel, Message>().ForMember(mem => mem.Sent, opt => opt.Ignore());
+            this.CreateMap<NewMessage, Message>().ForMember(mem => mem.Sent, opt => opt.MapFrom(src => DateTime.UtcNow));
         }
     }
 }

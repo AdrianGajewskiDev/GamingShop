@@ -46,7 +46,6 @@ namespace GamingShop.Web.API
 
            
 
-            services.AddAutoMapper(typeof(Startup));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(setup =>
             {
@@ -96,8 +95,10 @@ namespace GamingShop.Web.API
                 conf.Key = Configuration["JWT_Config:Secret_Key"];
             });
 
+
             var ServiceProvider = services.BuildServiceProvider();
 
+            services.AddAutoMapper(typeof(Startup));
 
             var mappingConfig = new MapperConfiguration(mc =>
             {

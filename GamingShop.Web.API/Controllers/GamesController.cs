@@ -80,7 +80,7 @@ namespace GamingShop.Web.API.Controllers
         {
 
                 if (searchQuery == string.Empty)
-                    return NotFound();
+                    return BadRequest("Search query is null");
 
                 List<Game> games = new List<Game>();
 

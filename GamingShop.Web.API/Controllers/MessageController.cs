@@ -4,12 +4,14 @@ using GamingShop.Service;
 using GamingShop.Service.Services;
 using GamingShop.Web.API.Models;
 using GamingShop.Web.API.Models.Response;
+using GamingShop.Web.API.Pagination;
 using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -55,7 +57,7 @@ namespace GamingShop.Web.API.Controllers
 
             Message msg;
 
-            if(message.Replying ==false)
+            if(message.Replying == false)
             {
                 var recipientID = _gameService.GetByID(message.GameID).OwnerID;
                 var recipient = await _userManager.FindByIdAsync(recipientID);
@@ -76,18 +78,7 @@ namespace GamingShop.Web.API.Controllers
             }
             else
             {
-                msg = new Message
-                {
-                    Content = message.Content,
-                    Read = false,
-                    RecipientEmail = message.RecipientEmail,
-                    RecipientID = message.RecipientID,
-                    SenderID = message.SenderID,
-                    Sent = DateTime.UtcNow,
-                    Subject = message.Subject,
-                    SenderEmail = message.SenderEmail
-
-                };
+                msg = _mapper.Map<Message>(message);
             }
            
 
@@ -104,26 +95,37 @@ namespace GamingShop.Web.API.Controllers
         /// Gets all messages for specified user
         /// </summary>
         /// <returns>All messages that belongs to the user</returns>
-        [HttpGet("GetMessages")]
+        [HttpGet("GetMessages/{by}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public ActionResult<MessageResponseModel> GetMessages()
+        public ActionResult<PaginatedResponseModel<Message>> GetMessages([FromQuery]PaginationParams param, string by)
         {
             var userID = User.FindFirst(x => x.Type == "UserID").Value;
 
-            var messagesSentByUser = _messageService.GetAllSentByUser(userID);
-            var messagesSentToUser = _messageService.GetAllSentToUser(userID);
-            var newMessages = messagesSentToUser.Where(msg => msg.Read == false);
+            PaginatedResponse<Message> messages;
 
-            var response = new MessageResponseModel
+            switch (by)
             {
-                MessagesSentByUser = messagesSentByUser.OrderByDescending(x => x.Sent),
-                MessagesSentToUser = messagesSentToUser.OrderByDescending(x => x.Sent),
-                NewMessages = newMessages.OrderByDescending(x => x.Sent),
-                NewMessagesAvailable = newMessages.Count()
+                case "by":
+                {
+                        messages = new PaginatedResponse<Message>(_messageService.GetAllSentByUser(userID).OrderByDescending(x => x.Sent), param.PageSize, param.PageIndex);   
+                }break;
+                case "to":
+                    {
+                        messages = new PaginatedResponse<Message>(_messageService.GetAllSentToUser(userID).OrderByDescending(x => x.Sent), param.PageSize, param.PageIndex);
+                    }
+                    break;
+                default:
+                    messages = new PaginatedResponse<Message>(_messageService.GetAllSentByUser(userID).OrderByDescending(x => x.Sent), param.PageSize, param.PageIndex);
+                    break;
+            }
+
+            var response = new PaginatedResponseModel<Message> 
+            {
+                Items = messages.GetResult(),
+                ResponseInfo = messages.GetResponseInfo()
             };
 
             return response;
-
         }
 
         /// <summary>
@@ -148,5 +150,6 @@ namespace GamingShop.Web.API.Controllers
             
             return NotFound();
         }
+
     }
 }
