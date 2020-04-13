@@ -16,7 +16,6 @@
   <ItemGroup>
     <ProjectReference Include="..\GamingShop.Data\GamingShop.Data.csproj" />
     <ProjectReference Include="..\GamingShop.Service\GamingShop.Service.csproj" />
-    <ProjectReference Include="..\GamingShop.Web\GamingShop.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
