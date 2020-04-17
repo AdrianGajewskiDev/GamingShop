@@ -27,11 +27,56 @@ namespace GamingShop.Service
             return games;
         }
 
-        public IEnumerable<Game> GetAllByPlatform(string platform)
+        public IEnumerable<Game> GetAllByPlatform(Platform platform)
         {
-            var p = platform.ToLower();
+            IList<Game> games = new List<Game>();
 
-            return _dbContext.Games.Where(x => x.Platform.ToLower() == p);
+            switch (platform)
+            {
+                case Platform.XboxOne:
+                    {
+                        var platf = "Xbox One";
+                        games =_dbContext.Games.Where(x => x.Platform == platf && x.Sold ==false )
+                            .OrderByDescending(x => x.Posted)
+                            .Take(3).ToList();
+                    }
+                    break;
+                case Platform.Playstation_4:
+                    {
+                        var platf = "PS4";
+                        games = _dbContext.Games.Where(x => x.Platform == platf || x.Platform == "Playstation 4" && x.Sold == false)
+                            .OrderByDescending(x => x.Posted)
+                            .Take(3).ToList(); 
+                    }
+                    break;
+                case Platform.Xbox360:
+                     {
+                        var platf = "Xbox 360";
+                        games  = _dbContext.Games.Where(x => x.Platform == platf && x.Sold == false)
+                            .OrderByDescending(x => x.Posted)
+                            .Take(3).ToList(); 
+                    }
+                    break;
+                case Platform.Playstation_3:
+                    {
+                        var platf = "PS3";
+                        games = _dbContext.Games.Where(x => x.Platform == platf || x.Platform == "Playstation 3" && x.Sold == false)
+                            .OrderByDescending(x => x.Posted)
+                            .Take(3).ToList();
+                    }
+                    break;
+                case Platform.PC:
+                    {
+                        var platf = "PC";
+                        games = _dbContext.Games.Where(x => x.Platform == platf && x.Sold == false)
+                            .OrderByDescending(x => x.Posted)
+                            .Take(3).ToList();
+                    }
+                    break;
+            }
+
+            return games;
+
         }
 
         public IEnumerable<Game> GetAllBySearchQuery(string searchQuery)
@@ -47,7 +92,7 @@ namespace GamingShop.Service
         {
             var t = type.ToLower();
 
-            return _dbContext.Games.Where(x => x.Type.ToLower() == t);
+            return GetAllAvailable().Where(x => x.Type.ToLower() == t);
         }
 
         public Game GetByID(int id)

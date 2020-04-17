@@ -51,23 +51,21 @@ namespace GamingShop.Web.API.Controllers
         /// </summary>
         /// <returns>Array of <see cref="GameIndexResponseModel"/></returns>
         [HttpGet("GetAll")]
-        public async Task<ActionResult<IEnumerable<GameIndexResponseModel>>> GetGames()
+        public ActionResult<GamesIndexResponseModel> GetGames()
         {
-                List<Game> games = new List<Game>();
 
-                await Task.Run(() =>
-                {
-                    games = _gamesService.GetAllAvailable().ToList();
-                });
+            var pcGames = _gamesService.GetAllByPlatform(Platform.PC).Select(game => _mapper.Map<GameIndexResponseModel>(game));
+            var xboxOneGames = _gamesService.GetAllByPlatform(Platform.XboxOne).Select(game => _mapper.Map<GameIndexResponseModel>(game));
+            var ps4Games = _gamesService.GetAllByPlatform(Platform.Playstation_4).Select(game => _mapper.Map<GameIndexResponseModel>(game));
 
-                List<GameIndexResponseModel> response = new List<GameIndexResponseModel>();
+            var response = new GamesIndexResponseModel 
+            {
+                PCGames = pcGames,
+                XboxOneGames=xboxOneGames, 
+                PlaystationGames = ps4Games
+            };
 
-                foreach (var game in games)
-                {
-                    response.Add(_mapper.Map<GameIndexResponseModel>(game));
-                }
-
-                return response;
+            return response;
         }
 
         /// <summary>
