@@ -51,14 +51,14 @@ namespace GamingShop.Web.API.Controllers
         /// </summary>
         /// <returns>Array of <see cref="GameIndexResponseModel"/></returns>
         [HttpGet("GetAll")]
-        public ActionResult<GamesIndexResponseModel> GetGames()
+        public ActionResult<GamesResponseModel> GetGames()
         {
 
             var pcGames = _gamesService.GetAllByPlatform(Platform.PC).Select(game => _mapper.Map<GameIndexResponseModel>(game));
             var xboxOneGames = _gamesService.GetAllByPlatform(Platform.XboxOne).Select(game => _mapper.Map<GameIndexResponseModel>(game));
             var ps4Games = _gamesService.GetAllByPlatform(Platform.Playstation_4).Select(game => _mapper.Map<GameIndexResponseModel>(game));
 
-            var response = new GamesIndexResponseModel 
+            var response = new GamesResponseModel 
             {
                 PCGames = pcGames,
                 XboxOneGames=xboxOneGames, 

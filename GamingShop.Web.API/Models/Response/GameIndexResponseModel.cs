@@ -4,6 +4,7 @@
     {
         public int ID { get; set; }
         public decimal Price { get; set; }
+        public bool Bestseller { get; set; }
         public string ImageUrl { get; set; }
         public string Title { get; set; }
         public string Producent { get; set; }

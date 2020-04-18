@@ -2,7 +2,7 @@
 
 namespace GamingShop.Web.API.Models.Response
 {
-    public class GamesIndexResponseModel
+    public class GamesResponseModel
     {
         public IEnumerable<GameIndexResponseModel> XboxOneGames { get; set; }
         public IEnumerable<GameIndexResponseModel> PlaystationGames { get; set; }
