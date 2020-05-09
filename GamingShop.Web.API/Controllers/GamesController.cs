@@ -12,7 +12,6 @@ using GamingShop.Service.Services;
 using GamingShop.Web.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 
 namespace GamingShop.Web.API.Controllers
 {

@@ -77,11 +77,11 @@ namespace GamingShop.Web.API.Controllers
                     return newUser;
                 }
                 else
-                    return BadRequest("Failed to register new user");
+                     return BadRequest("Failed to register new user");
         }
 
         /// <summary>
-        /// Checks if <paramref name="model"/> is valid and the log user in
+        /// Checks if <paramref name="model"/> is valid and the sign user in
         /// </summary>
         /// <param name="model">A user login credentials</param>
         /// <returns>Returns JWT containing UserID</returns>
