@@ -41,8 +41,8 @@ namespace GamingShop.Service
                     break;
                 case Platform.Playstation_4:
                     {
-                        var platf = "PS4";
-                        games = _dbContext.Games.Where(x => x.Platform == platf || x.Platform == "Playstation 4" && x.Sold == false).ToList();
+                        var platf = "Playstation 4";
+                        games = _dbContext.Games.Where(x => x.Platform == platf && x.Sold == false).ToList();
                     }
                     break;
                 case Platform.Xbox360:
@@ -56,7 +56,7 @@ namespace GamingShop.Service
                 case Platform.Playstation_3:
                     {
                         var platf = "PS3";
-                        games = _dbContext.Games.Where(x => x.Platform == platf || x.Platform == "Playstation 3" && x.Sold == false).ToList();
+                        games = _dbContext.Games.Where(x => x.Platform == platf && x.Sold == false).ToList();
                     }
                     break;
                 case Platform.PC:

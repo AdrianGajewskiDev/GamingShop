@@ -60,7 +60,7 @@ namespace GamingShop.Web.API.Controllers
             var response = new GamesResponseModel 
             {
                 PCGames = pcGames,
-                XboxOneGames=xboxOneGames, 
+                XboxOneGames = xboxOneGames, 
                 PlaystationGames = ps4Games
             };
 
