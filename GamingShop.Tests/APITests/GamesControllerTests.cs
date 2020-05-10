@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GamingShop.Tests.APITests
 {
@@ -31,7 +32,7 @@ namespace GamingShop.Tests.APITests
         [Test]
         public void Games_Controller_Should_Return_All_Games_From_Database()
         {
-            IOptions<ApplicationOptions> options = new Mock<IOptions<ApplicationOptions>>().Object; 
+            IOptions<ApplicationOptions> options = new Mock<IOptions<ApplicationOptions>>().Object;
             _context = new ApplicationDbContextFactory(ConnectionString).CreateDbContext();
             _gamesService = new GameService(_context);
             _imageService = new ImageService(_context, options);
@@ -41,11 +42,11 @@ namespace GamingShop.Tests.APITests
                 mc.AddProfile(new GameProfile(_imageService));
             });
 
-             _mapper = mappingConfig.CreateMapper();
+            _mapper = mappingConfig.CreateMapper();
 
 
             var controller = new GamesController(_context, _gamesService, null, _imageService, _mapper);
-            var games =  controller.GetGames();
+            var games = controller.GetGames();
 
             var expected = _context.Games.Where(g => g.Sold == false).Count();
 
@@ -53,5 +54,35 @@ namespace GamingShop.Tests.APITests
 
             Assert.AreEqual(expected, result);
         }
+
+        [TestCase("Xbox One")]
+        [TestCase("Playstion 4")]
+        [TestCase("PC")]
+        [TestCase("The Witcher 3")]
+        [TestCase("Fifa 20")]
+        public async Task Games_Controller_Should_Return_All_Games_Coresponding_To_Search_Query(string query)
+        {
+            IOptions<ApplicationOptions> options = new Mock<IOptions<ApplicationOptions>>().Object;
+            _context = new ApplicationDbContextFactory(ConnectionString).CreateDbContext();
+            _gamesService = new GameService(_context);
+            _imageService = new ImageService(_context, options);
+
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new GameProfile(_imageService));
+            });
+
+            _mapper = mappingConfig.CreateMapper();
+
+
+            var controller = new GamesController(_context, _gamesService, null, _imageService, _mapper);
+            var games = await controller.GetBySearchQuery(query);
+
+            var expected = _gamesService.GetAllBySearchQuery(query).Count();
+            var result = games.Value.Count();
+
+            Assert.AreEqual(expected, result);
+        }
+
     }
 }
