@@ -12,6 +12,8 @@ using GamingShop.Service.Services;
 using GamingShop.Web.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
+using GamingShop.Web.API.MediatR.Queries;
+using MediatR;
 
 namespace GamingShop.Web.API.Controllers
 {
@@ -28,6 +30,8 @@ namespace GamingShop.Web.API.Controllers
         private readonly IImage _imageService;
         private readonly IMapper _mapper;
 
+        private readonly IMediator _mediator; 
+
 
         /// <summary>
         /// Default constructor
@@ -36,13 +40,14 @@ namespace GamingShop.Web.API.Controllers
         /// <param name="gameService">A Game Service</param>
         /// <param name="userManager">A User Manager</param>
         /// <param name="image">A Image Service</param>
-        public GamesController(ApplicationDbContext context, IGame gameService, UserManager<ApplicationUser> userManager,IImage image,IMapper mapper)
+        public GamesController(ApplicationDbContext context, IGame gameService, UserManager<ApplicationUser> userManager,IImage image,IMapper mapper, IMediator mediator)
         {
             _context = context;
             _gamesService = gameService;
             _userManager = userManager;
             _imageService = image;
             _mapper = mapper;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -50,21 +55,15 @@ namespace GamingShop.Web.API.Controllers
         /// </summary>
         /// <returns>Array of <see cref="GameIndexResponseModel"/></returns>
         [HttpGet("GetAll")]
-        public ActionResult<GamesResponseModel> GetGames()
+        public async Task<ActionResult<GamesResponseModel>> GetGames()
         {
+            var query = new GetGamesByPlatformQuery();
+            var response = await _mediator.Send(query);
 
-            var pcGames = _gamesService.GetAllByPlatform(Platform.PC).Select(game => _mapper.Map<GameIndexResponseModel>(game));
-            var xboxOneGames = _gamesService.GetAllByPlatform(Platform.XboxOne).Select(game => _mapper.Map<GameIndexResponseModel>(game));
-            var ps4Games = _gamesService.GetAllByPlatform(Platform.Playstation_4).Select(game => _mapper.Map<GameIndexResponseModel>(game));
+            if (response == null)
+                return NotFound("Cannot get any available game");
 
-            var response = new GamesResponseModel 
-            {
-                PCGames = pcGames,
-                XboxOneGames = xboxOneGames, 
-                PlaystationGames = ps4Games
-            };
-
-            return response;
+            return Ok(response);
         }
 
         /// <summary>
@@ -105,30 +104,14 @@ namespace GamingShop.Web.API.Controllers
         [HttpGet("GetGame/{id}")]
         public async Task<ActionResult<GameDetailsResponseModel>> GetGame(int id)
         {
-                var game = _gamesService.GetByID(id);
+            var query = new GetGameByIDQuery(id);
+            var response = await _mediator.Send(query);
 
-                if (game == null)
-                {
-                    return NotFound();
-                }
+            if (response == null)
+                return NotFound($"Game with id of {id} does not exist!!!");
 
-                string ownerUsername = string.Empty;
+            return response;
 
-                if (!string.IsNullOrEmpty(game.OwnerID))
-                {
-                    var owner = await _userManager.FindByIdAsync(game.OwnerID);
-                    ownerUsername = owner.UserName;
-
-                }
-                else
-                {
-                    ownerUsername = "Unknown";
-                }
-
-                var response = _mapper.Map<GameDetailsResponseModel>(game);
-                response.OwnerUsername = ownerUsername;
-
-                return response;
         }
 
         /// <summary>

@@ -8,6 +8,7 @@ using GamingShop.Web.API.Exceptions;
 using GamingShop.Web.API.Helpers;
 using GamingShop.Web.API.Profiles;
 using GamingShop.Web.Data;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -43,9 +44,6 @@ namespace GamingShop.Web.API
                 config.JWTSecretKey = Configuration["JWT_Config:Secret_Key"];
                 config.ImagesPath = @"C:\Users\adria\Desktop\AngularApp\GamingShop_Frontend\GamingShop-Frontend\src\assets\img";
             });
-
-           
-
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(setup =>
             {
@@ -110,6 +108,8 @@ namespace GamingShop.Web.API
 
             IMapper mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
+
+            services.AddMediatR(typeof(Startup));
 
         }
 
