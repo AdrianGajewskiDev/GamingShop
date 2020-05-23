@@ -1,5 +1,4 @@
 ﻿using GamingShop.Data.Models;
-using GamingShop.Data;
 using GamingShop.Service;
 using GamingShop.Web.API.Models.Response;
 using GamingShop.Web.Data;
@@ -11,9 +10,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using GamingShop.Service.Services;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
+using GamingShop.Data.DbContext;
 
 namespace GamingShop.Web.API.Controllers
 {
@@ -25,7 +23,8 @@ namespace GamingShop.Web.API.Controllers
     public class UserProfileController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ApplicationDbContext _dbContext;
+        private ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContextFactory _dbContextFactory;
         private readonly ApplicationOptions _options;
         private readonly IMapper _mapper;
 
@@ -36,11 +35,11 @@ namespace GamingShop.Web.API.Controllers
         /// <param name="context">Database context</param>
         /// <param name="options">Application options</param>
         /// <param name="imageService">Image service</param>
-        public UserProfileController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, 
+        public UserProfileController(UserManager<ApplicationUser> userManager, ApplicationDbContextFactory contextFactory, 
             IOptions<ApplicationOptions> options, IMapper mapper)
         {
             _userManager = userManager;
-            _dbContext = context;
+            _dbContextFactory = contextFactory;
             _options = options.Value;
             _mapper = mapper;
         }
@@ -154,6 +153,9 @@ namespace GamingShop.Web.API.Controllers
         [Route("ConfirmEmail/{userID}")]
         public async Task<IActionResult> ConfirmEmail(string userID, string token)
         {
+            using (_dbContext = _dbContextFactory.CreateDbContext())
+            {
+
                 var user = await _userManager.FindByIdAsync(userID);
 
                 await _userManager.ConfirmEmailAsync(user, token);
@@ -163,6 +165,7 @@ namespace GamingShop.Web.API.Controllers
                 OpenUrl(_options.ClientURL + "/EmailConfirmation");
 
                 return new NoContentResult();
+            }
         }
 
         /// <summary>

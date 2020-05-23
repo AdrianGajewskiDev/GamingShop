@@ -10,9 +10,6 @@ namespace GamingShop.Web.API.Models
         public bool BestSeller { get; set; }
         public bool Sold { get; set; }
         public string ImageUrl { get; set; }
-        public string DayOfLaunch { get; set; }
-        public string MonthOfLaunch { get; set; }
-        public string YearOfLaunch { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string Producent { get; set; }

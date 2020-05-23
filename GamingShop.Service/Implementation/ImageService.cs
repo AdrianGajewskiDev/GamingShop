@@ -1,4 +1,5 @@
-﻿using GamingShop.Data.Models;
+﻿using GamingShop.Data.DbContext;
+using GamingShop.Data.Models;
 using GamingShop.Service.Services;
 using GamingShop.Web.Data;
 using Microsoft.AspNetCore.Http;
@@ -13,103 +14,124 @@ namespace GamingShop.Service.Implementation
 
     public class ImageService : IImage
     {
-        private readonly ApplicationDbContext _context;
+        private ApplicationDbContext _context;
+        private readonly ApplicationDbContextFactory _factory;
         private readonly ApplicationOptions _options;
 
-        public ImageService(ApplicationDbContext context, IOptions<ApplicationOptions> options)
+        public ImageService(ApplicationDbContextFactory context, IOptions<ApplicationOptions> options)
         {
-            _context = context;
+            _factory = context;
             _options = options.Value;
         }
 
         public string GetImageNameForGame(int id)
         {
-            var image = _context.Images.Where(x => x.GameID == id).FirstOrDefault();
+            using (_context = _factory.CreateDbContext())
+            {
+                var image = _context.Images.Where(x => x.GameID == id).FirstOrDefault();
 
-            if (image == null)
-                return "Image not found!!";
+                if (image == null)
+                    return "Image not found!!";
 
-            return image.UniqueName;
+                return image.UniqueName;
+            }
+
         }
 
         public string GetImagePathForGame(int id)
         {
-            var image = _context.Images.Where(x => x.GameID == id).FirstOrDefault();
+            using (_context = _factory.CreateDbContext())
+            {
 
-            if (image == null)
-                return "Image not found!!";
+                var image = _context.Images.Where(x => x.GameID == id).FirstOrDefault();
 
-            return image.Path;
+                if (image == null)
+                    return "Image not found!!";
+
+                return image.Path;
+            }
         }
 
         public string GetImagePathForUser(string userID)
         {
-            var images = _context.Images.Where(img => img.UserID == userID);
+            using (_context = _factory.CreateDbContext())
+            {
 
-            if (!images.Any())
-                return "Image Not Found";
+                var images = _context.Images.Where(img => img.UserID == userID);
 
-            var sortedImages = images.OrderByDescending(img => img.Posted);
+                if (!images.Any())
+                    return "Image Not Found";
 
-            return sortedImages.First().UniqueName;
+                var sortedImages = images.OrderByDescending(img => img.Posted);
+
+                return sortedImages.First().UniqueName;
+            }
         }
 
         public async Task UploadImageAsync(int ID, IFormFile image, ImageType type)
         {
-            var id = ID.ToString();
+            using (_context = _factory.CreateDbContext())
+            {
 
-            await UploadImageAsync(id, image,type);
+                var id = ID.ToString();
+
+                await UploadImageAsync(id, image, type);
+            }
         }
 
         public async Task UploadImageAsync(string ID, IFormFile image, ImageType type)
         {
-            if (image == null)
-                throw new ArgumentNullException();
-
-            var path = _options.ImagesPath;
-
-            var uniqueName = $"{ID}_{image.FileName}";
-
-            var filePath = Path.Combine(path, uniqueName);
-
-            if (Directory.Exists(path))
+            using (_context = _factory.CreateDbContext())
             {
-                using (var sr = new FileStream(filePath, FileMode.Create))
+
+                if (image == null)
+                    throw new ArgumentNullException();
+
+                var path = _options.ImagesPath;
+
+                var uniqueName = $"{ID}_{image.FileName}";
+
+                var filePath = Path.Combine(path, uniqueName);
+
+                if (Directory.Exists(path))
                 {
-                    await image.CopyToAsync(sr);
+                    using (var sr = new FileStream(filePath, FileMode.Create))
+                    {
+                        await image.CopyToAsync(sr);
+                    }
                 }
+
+                Image img = null;
+
+                switch (type)
+                {
+                    case ImageType.GameCover:
+                        img = new Image
+                        {
+                            UniqueName = uniqueName,
+                            Path = filePath,
+                            GameID = int.Parse(ID),
+                            Posted = DateTime.UtcNow
+                        };
+                        break;
+                    case ImageType.UserProfile:
+                        img = new Image
+                        {
+                            UniqueName = uniqueName,
+                            Path = filePath,
+                            UserID = ID,
+                            Posted = DateTime.UtcNow
+                        };
+                        break;
+                    default:
+                        break;
+                }
+
+                _context.Images.Add(img);
+
+                await _context.SaveChangesAsync();
+
             }
-
-            Image img = null;
-
-            switch (type)
-            {
-                case ImageType.GameCover:
-                    img = new Image
-                    {
-                        UniqueName = uniqueName,
-                        Path = filePath,
-                        GameID = int.Parse(ID),
-                        Posted = DateTime.UtcNow
-                    };
-                    break;
-                case ImageType.UserProfile:
-                    img = new Image
-                    {
-                        UniqueName = uniqueName,
-                        Path = filePath,
-                        UserID = ID,
-                        Posted = DateTime.UtcNow
-                    };
-                    break;
-                default:
-                    break;
-            }
-
-            _context.Images.Add(img);
-
-            await _context.SaveChangesAsync();
-
         }
     }
 }

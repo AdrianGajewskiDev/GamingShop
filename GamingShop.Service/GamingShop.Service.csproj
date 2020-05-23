@@ -16,4 +16,8 @@
     <ProjectReference Include="..\GamingShop.Data\GamingShop.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Implementation\User\" />
+  </ItemGroup>
+
 </Project>

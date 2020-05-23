@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 using AutoMapper;
 using GamingShop.Data.Models;
 using GamingShop.Service;
+using GamingShop.Web.API.MediatR.Commands.Order;
+using GamingShop.Web.API.MediatR.Queries.Order;
 using GamingShop.Web.API.Models;
 using GamingShop.Web.Data;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -22,35 +25,14 @@ namespace GamingShop.Web.API.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly ICart _cartService;
-        private readonly IGame _gameService;
-        private IEmailSender _emailSender;
-        private IOrder _orderService;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ApplicationDbContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        /// <param name="cartService">A cart service</param>
-        /// <param name="gameService">A game service </param>
-        /// <param name="dbContext">A Database context</param>
-        /// <param name="manager">A user manager</param>
-        /// <param name="sender">A email sender</param>
-        /// <param name="orderService">A order service</param>
-        public OrderController(ICart cartService, IGame gameService,
-            ApplicationDbContext dbContext, UserManager<ApplicationUser> manager,
-            IEmailSender sender, IOrder orderService, IMapper mapper)
+        public OrderController(IMediator mediator)
         {
-            _cartService = cartService;
-            _gameService = gameService;
-            _dbContext = dbContext;
-            _userManager = manager;
-            _emailSender = sender;
-            _orderService = orderService;
-            _mapper = mapper;
-
+            _mediator = mediator;
         }
         
         /// <summary>
@@ -63,56 +45,15 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> PlaceOrder(int id, [FromBody] OrderModel model)
         {
-                IEnumerable<Game> cartItems = _cartService.GetGames(id);
+            var userID = User.Claims.First(x => x.Type == "UserID").Value;
 
-                var userID = User.Claims.First(x => x.Type == "UserID").Value;
-                var user = await _userManager.FindByIdAsync(userID);
-                var itemsOwner = await _userManager.FindByIdAsync(cartItems.First().OwnerID);
-                var totalPrice = CalculateTotalPrice(cartItems);
+            var cmd = new PlaceOrderCommand(id,userID, model);
+            var response = await _mediator.Send(cmd);
 
-                model.Placed = DateTime.UtcNow;
-                model.TotalPrice = totalPrice;
-                model.Email = (string.IsNullOrEmpty(model.AlternativeEmailAdress)) ? user.Email : model.AlternativeEmailAdress;
-                model.PhoneNumber = (string.IsNullOrEmpty(model.AlternativePhoneNumber)) ? user.PhoneNumber : model.AlternativePhoneNumber;
+            if (response)
+                return Ok("Order has been successfully placed");
 
-                var result = _mapper.Map<Order>(model);
-                var orderID = _dbContext.Orders.Last().ID;
-
-                string gameTitles = string.Empty;
-
-                foreach (var item in cartItems)
-                {
-                    gameTitles = gameTitles.Concat(item.Title).ToString();
-                    _dbContext.OrderItems.Add(new OrderItem
-                    {
-                        GameID = item.ID,
-                        CartID = user.CartID,
-                        OrderID = orderID
-                    });
-                }
-
-                var message = new Message
-                {
-                    Content = $"Ordered items: {gameTitles}",
-                    RecipientEmail = itemsOwner.Email,
-                    RecipientID = itemsOwner.Id,
-                    SenderID = user.Id,
-                    Sent = DateTime.UtcNow,
-                    Subject = $"A {user.UserName} ordered your game(s)"
-                };
-                _dbContext.Messages.Add(message);
-
-                await _dbContext.SaveChangesAsync();
-
-                await _emailSender.SendOrderDetailsEmail(model.Email, "Order", cartItems, new Address { Street = model.Street, City = model.City, Country = model.Country, PhoneNumber = model.PhoneNumber }, totalPrice);
-
-                await _emailSender.SendEmail(message);
-
-                await _cartService.ClearCart(id);
-
-                await _orderService.MarkGameAsSold(cartItems);
-
-                return Ok();
+            return BadRequest("Something went wrong while trying to place order");
         }
 
         /// <summary>
@@ -123,35 +64,16 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<IEnumerable<LatestOrderModel>>> GetLatestOrders()
         {
-                var userID = User.Claims.First(c => c.Type == "UserID").Value;
-                var user = await _userManager.FindByIdAsync(userID);
-                var cardID = user.CartID;
-                var latestOrders = _orderService.GetAllByCartID(cardID);
+            var userID = User.Claims.First(c => c.Type == "UserID").Value;
 
-                List<LatestOrderModel> results = new List<LatestOrderModel>();
+            var query = new GetLatestOrdersQuery(userID);
+            var response = await _mediator.Send(query);
 
-                foreach (var order in latestOrders)
-                {
-                    results.Add(_mapper.Map<LatestOrderModel>(order));
-                }
+            if (response == null)
+                return NotFound("Cannot get any available latest orders");
 
-                return results;
+            return Ok(response);
         }
 
-        /// <summary>
-        /// Method to calculate total price
-        /// </summary>
-        /// <param name="games">A list of games in user cart</param>
-        /// <returns>Total price of all items in cart</returns>
-        decimal CalculateTotalPrice(IEnumerable<Game> games)
-        {
-            decimal price = 0;
-            foreach (var item in games)
-            {
-                price += item.Price;
-            }
-
-            return price;
-        }
     }
 }

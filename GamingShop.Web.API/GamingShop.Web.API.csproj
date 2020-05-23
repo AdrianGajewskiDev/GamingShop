@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="MediatR\Commands\" />
     <Folder Include="wwwroot\Images\" />
   </ItemGroup>
 

@@ -1,53 +1,66 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GamingShop.Data.DbContext;
 using GamingShop.Data.Models;
 using GamingShop.Web.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace GamingShop.Service
 {
     public class OrderService : IOrder
     {
-        private readonly ApplicationDbContext _context;
+        private ApplicationDbContext _context;
+        private readonly ApplicationDbContextFactory _contextFactory;
 
-        public OrderService(ApplicationDbContext context)
+        public OrderService(ApplicationDbContextFactory context)
         {
-            _context = context;
+            _contextFactory = context;
         }
 
         public async Task MarkGameAsSold(Game game)
         {
-            game.Sold = true;
+            using (_context = _contextFactory.CreateDbContext())
+            {
+                game.Sold = true;
+                await _context.SaveChangesAsync();
+            }
 
-            await _context.SaveChangesAsync();
         }
 
         public async Task MarkGameAsSold(IEnumerable<Game> games)
         {
-            foreach (var game in games)
+            using (_context = _contextFactory.CreateDbContext())
             {
-                await MarkGameAsSold(game);
+                foreach (var game in games)
+                {
+                    await MarkGameAsSold(game);
+                }
             }
         }
 
         public IEnumerable<Order> GetAllByCartID(int cartID)
         {
-            return _context.Orders.Where(order => order.CartID == cartID);
+            using (_context = _contextFactory.CreateDbContext())
+            {
+                return _context.Orders.Where(order => order.CartID == cartID);
+            }
         }
 
         public IEnumerable<Game> GetGamesFromOrder(int orderID)
         {
-            var items = _context.OrderItems.Where(x => x.OrderID == orderID);
-
-            List<Game> games = new List<Game>();
-
-            foreach (var item in items)
+            using (_context = _contextFactory.CreateDbContext())
             {
-                games.Add(_context.Games.Where(x => x.ID == item.GameID).FirstOrDefault());
-            }
+                var items = _context.OrderItems.Where(x => x.OrderID == orderID);
 
-            return games;
+                List<Game> games = new List<Game>();
+
+                foreach (var item in items)
+                {
+                    games.Add(_context.Games.Where(x => x.ID == item.GameID).FirstOrDefault());
+                }
+
+                return games;
+            }
         }
     }
 }

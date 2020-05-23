@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using GamingShop.Data.DbContext;
 using GamingShop.Data.Models;
 using GamingShop.Service;
 using GamingShop.Service.Extensions;
@@ -59,19 +60,12 @@ namespace GamingShop.Web.API
                 conf.Password.RequireNonAlphanumeric = false;
             });
 
-
-            services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-            });
-
             services.AddCors(cors => cors.AddPolicy("DevCorsPolicy", options => 
             {
                 options.AllowAnyOrigin();
                 options.AllowAnyMethod();
                 options.AllowAnyHeader();
             }));
-
 
             services.AddSendGrid<SendGridEmailSender>();
 
@@ -83,6 +77,9 @@ namespace GamingShop.Web.API
             });
 
             services.AddSingleton<JWTToken>();
+            services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddSingleton<ApplicationDbContextFactory>(new ApplicationDbContextFactory(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddTransient<MessagesDatabaseSeeder>();
 
             services.SetUpJWT(conf => 
@@ -93,7 +90,7 @@ namespace GamingShop.Web.API
                 conf.Key = Configuration["JWT_Config:Secret_Key"];
             });
 
-
+            
             var ServiceProvider = services.BuildServiceProvider();
 
             services.AddAutoMapper(typeof(Startup));

@@ -21,7 +21,6 @@ namespace GamingShop.Web.API.Profiles
             this.CreateMap<Game, GameDetailsResponseModel>().ForMember(mem => mem.ImageUrl, opt => opt.MapFrom(src => _imageService.GetImageNameForGame(src.ID)))
                 .ForMember(mem => mem.OwnerUsername, opt => opt.Ignore())
                 .ForMember(mem => mem.LaunchDate, opt => opt.MapFrom(src => $"{src.DayOfLaunch}/{src.MonthOfLaunch}/{src.YearOfLaunch}"));
-
         }
 
     }

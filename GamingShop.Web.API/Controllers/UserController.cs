@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
+using GamingShop.Data.DbContext;
 using GamingShop.Data.Models;
 using GamingShop.Service;
 using GamingShop.Web.API.Models;
 using GamingShop.Web.Data;
-using Microsoft.AspNetCore.Http;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -21,12 +22,15 @@ namespace GamingShop.Web.API.Controllers
     public class UserController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ApplicationDbContext _dbContext;
+        private  ApplicationDbContext _dbContext;
+        private  ApplicationDbContextFactory _dbContextFactory;
         private readonly IEmailSender _emailSender;
         private readonly JWTToken _tokenWriter;
         private readonly IMapper _mapper;
         private readonly ApplicationOptions _options;
 
+
+        private readonly IMediator _mediator;
         /// <summary>
         /// A default constructor 
         /// </summary>
@@ -35,16 +39,17 @@ namespace GamingShop.Web.API.Controllers
         /// <param name="emailSender">A Email Sender</param>
         /// <param name="tokenWriter">A Jason Web Token Writer</param>
         /// <param name="options">A Application Settings</param>
-        public UserController(UserManager<ApplicationUser> service, ApplicationDbContext context, IEmailSender emailSender,
+        public UserController(IMediator mediator, UserManager<ApplicationUser> service, ApplicationDbContextFactory contextFactory, IEmailSender emailSender,
             JWTToken tokenWriter, IOptions<ApplicationOptions> options, IMapper mapper)
         {
             _userManager = service;
-            _dbContext = context;
+            _dbContextFactory = contextFactory;
             _emailSender = emailSender;
             _tokenWriter = tokenWriter;
             _mapper = mapper;
             _options = options.Value;
 
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -55,7 +60,8 @@ namespace GamingShop.Web.API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<ApplicationUser>> RegisterUser(RegisterModel registerModel)
         {
-
+            using(_dbContext = _dbContextFactory.CreateDbContext())
+            {
                 var newUser = _mapper.Map<ApplicationUser>(registerModel);
 
                 var result = await _userManager.CreateAsync(newUser, newUser.Password);
@@ -77,7 +83,9 @@ namespace GamingShop.Web.API.Controllers
                     return newUser;
                 }
                 else
-                     return BadRequest("Failed to register new user");
+                    return BadRequest("Failed to register new user");
+            }
+               
         }
 
         /// <summary>
@@ -109,7 +117,8 @@ namespace GamingShop.Web.API.Controllers
         [HttpPost("ForgetPassword/{email}")]
         public async Task<IActionResult> ForgetPassword(string email)
         {
-
+            using (_dbContext = _dbContextFactory.CreateDbContext())
+            {
                 var user = await _userManager.FindByEmailAsync(email);
 
                 if (user == null)
@@ -136,6 +145,8 @@ namespace GamingShop.Web.API.Controllers
                 await _emailSender.SendEmail(message);
 
                 return Ok();
+            }
+                
         }
 
         /// <summary>

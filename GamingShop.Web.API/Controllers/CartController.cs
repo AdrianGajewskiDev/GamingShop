@@ -1,8 +1,8 @@
 ﻿using GamingShop.Data.Models;
-using GamingShop.Service;
+using GamingShop.Web.API.MediatR.Commands.Cart;
+using GamingShop.Web.API.MediatR.Queries.Cart;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,21 +18,14 @@ namespace GamingShop.Web.API.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        private readonly ICart _cartService;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IGame _gameService;
+        private readonly IMediator _mediator;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        /// <param name="cartService">A Cart Service</param>
-        /// <param name="userManager">A User manager</param>
-        /// <param name="gameService">A Game Service</param>
-        public CartController(ICart cartService, UserManager<ApplicationUser> userManager, IGame gameService)
+        public CartController(IMediator mediator)
         {
-            _cartService = cartService;
-            _userManager = userManager;
-            _gameService = gameService;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -43,13 +36,15 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<IEnumerable<Game>>> GetItemsInCart()
         {
-                var userID = User.Claims.First(x => x.Type == "UserID").Value;
+            string userID = User.Claims.First(x => x.Type == "UserID").Value;
+            var query = new GetItemsInCartQuery(userID);
+            var response = await _mediator.Send(query);
 
-                var user = await _userManager.FindByIdAsync(userID);
+            if (!response.Any() || response == null)
+                return NotFound($"Cart does not contain any items");
 
-                var games = _cartService.GetGames(user.CartID);
+            return Ok(response);
 
-                return games.ToArray();
         }
 
         /// <summary>
@@ -62,12 +57,14 @@ namespace GamingShop.Web.API.Controllers
         public async Task<IActionResult> AddToCart(int ID)
         {
             var userID = User.Claims.First(x => x.Type == "UserID").Value;
-            var game = _gameService.GetByID(ID);
-            var user = await _userManager.FindByIdAsync(userID);
+            var cmd = new AddToCartCommand(ID, userID);
+            var response = await _mediator.Send(cmd);
 
-            _cartService.AddToCart(user.CartID, game);
+            if (response)
+                return Ok($"Item of ID {ID} has been successfully added to cart.");
 
-            return Ok();
+            return BadRequest("Something bad has happend while trying to add new item to cart.");
+
         }
 
         /// <summary>
@@ -79,13 +76,14 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveFromCart([FromBody]int ID)
         {
-                var userID = User.Claims.First(x => x.Type == "UserID").Value;
-                var user = await _userManager.FindByIdAsync(userID);
-                var game = _cartService.GetGames(user.CartID).Where(g => g.ID == ID).First();
+            var userID = User.Claims.First(x => x.Type == "UserID").Value;
+            var cmd = new RemoveFromCartCommand(userID, ID);
+            var response = await _mediator.Send(cmd);
 
-                _cartService.RemoveFormCart(user.CartID, game);
+            if (response == true)
+                return Ok($"Successfully removed game of id: {ID}");
 
-                return Ok();
+            return BadRequest("Something bad has happend while trying to remove item from cart.");
         }
 
         /// <summary>
@@ -96,10 +94,15 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<int>> GetCardID()
         {
-                var userID = User.Claims.First(x => x.Type == "UserID").Value;
-                var user = await _userManager.FindByIdAsync(userID);
+            var userID = User.Claims.First(x => x.Type == "UserID").Value;
+            var query = new GetUserCartIDQuery(userID);
 
-                return user.CartID;
+            var response = _mediator.Send(query);
+
+            if (response != null)
+                return Ok(response);
+
+            return NotFound("Cannot get user cart ID");
         }
     }
 }

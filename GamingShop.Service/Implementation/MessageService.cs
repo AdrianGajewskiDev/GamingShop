@@ -1,4 +1,5 @@
-﻿using GamingShop.Data.Models;
+﻿using GamingShop.Data.DbContext;
+using GamingShop.Data.Models;
 using GamingShop.Service.Services;
 using GamingShop.Web.Data;
 using System.Collections.Generic;
@@ -9,18 +10,20 @@ namespace GamingShop.Service.Implementation
 {
     public class MessageService : IMessage
     {
-        private readonly ApplicationDbContext _dbContext;
+        private ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContextFactory _dbContextFactory;
 
-        public MessageService(ApplicationDbContext context)
+        public MessageService(ApplicationDbContextFactory context)
         {
-            _dbContext = context;
+            _dbContextFactory = context;
+            _dbContext = _dbContextFactory.CreateDbContext();
         }
 
         public IEnumerable<Message> GetAllSentByUser(string userID)
         {
-            var messages = _dbContext.Messages.Where(msg => msg.SenderID == userID);
+                var messages = _dbContext.Messages.Where(msg => msg.SenderID == userID);
 
-            return messages;
+                return messages;
         }
 
         public IEnumerable<Message> GetAllSentToUser(string userID)
@@ -32,17 +35,16 @@ namespace GamingShop.Service.Implementation
 
         public async Task<Message> GetByIDAsync(int id)
         {
-            var result =  await _dbContext.FindAsync<Message>(id);
+            var result = await _dbContext.FindAsync<Message>(id);
 
             //Mark message as read 
-            if(result.Read == false)
+            if (result.Read == false)
             {
                 result.Read = true;
                 await _dbContext.SaveChangesAsync();
             }
 
             return result;
-
         }
     }
 }

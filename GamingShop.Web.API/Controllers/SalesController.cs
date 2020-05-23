@@ -1,19 +1,14 @@
-﻿using AutoMapper;
-using GamingShop.Data;
-using GamingShop.Data.Models;
+﻿using GamingShop.Data;
 using GamingShop.Service;
-using GamingShop.Service.Services;
+using GamingShop.Web.API.MediatR.Commands.Sales;
+using GamingShop.Web.API.MediatR.Queries.Sales;
 using GamingShop.Web.API.Models;
-using GamingShop.Web.Data;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace GamingShop.Web.API.Controllers
@@ -25,29 +20,14 @@ namespace GamingShop.Web.API.Controllers
     [Route("api/Sales")]
     public class SalesController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly ApplicationOptions _options;
-        private readonly IImage _imageService;
-        private readonly ISale _saleService;
-        private IMapper _mapper;
-        private readonly LinkGenerator _generator;
+        private readonly IMediator _mediator;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        /// <param name="context">A Database context</param>
-        /// <param name="options">Application Options</param>
-        /// <param name="image">A Image service</param>
-        /// <param name="sale">A Sale Service</param>
-        public SalesController(ApplicationDbContext context, IOptions<ApplicationOptions> options,
-            IImage image, ISale sale, IMapper mapper, LinkGenerator generator)
+        public SalesController(IMediator mediator)
         {
-            _context = context;
-            _options = options.Value;
-            _imageService = image;
-            _saleService = sale;
-            _mapper = mapper;
-            _generator = generator;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -59,21 +39,15 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<int>> AddGame(NewGameModel game)
         {
-                var userID = User.FindFirst(c => c.Type == "UserID").Value;
+            var userID = User.FindFirst(c => c.Type == "UserID").Value;
+            var cmd = new AddGameCommand(game, userID);
+            var response = await _mediator.Send(cmd);
 
-                var result = _mapper.Map<Game>(game);
+            if (response != null)
+                return Created(response.Link, response.GameID);
 
-                result.DayOfLaunch = game.LaunchDate.Split("/")[0];
-                result.MonthOfLaunch = game.LaunchDate.Split("/")[1];
-                result.YearOfLaunch = game.LaunchDate.Split("/")[2];
-                result.OwnerID = userID;
+            return BadRequest("Something went wrong while trying to add new game to database");
 
-                var link = _generator.GetPathByAction("AddGame", "Sales");
-                await _context.Games.AddAsync(result);
-
-                await _context.SaveChangesAsync();
-
-                return Created(link, result.ID);
         }
 
         /// <summary>
@@ -86,11 +60,15 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> PostGameImage(IFormFile image, int id)
         {
-                var userID = User.FindFirst(c => c.Type == "UserID").Value;
+            var userID = User.FindFirst(c => c.Type == "UserID").Value;
 
-                await _imageService.UploadImageAsync(id, image, ImageType.GameCover);
+            var cmd = new UploadImageCommand(image, id, ImageType.GameCover);
+            var response = await _mediator.Send(cmd);
 
+            if(response == true)
                 return Ok();
+
+            return BadRequest("Something bad has happened while trying to upload image");
         }
 
         /// <summary>
@@ -103,11 +81,14 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddUserProfileImage(IFormFile image)
         {
-                var userID = User.FindFirst(c => c.Type == "UserID").Value;
+            var userID = User.FindFirst(c => c.Type == "UserID").Value;
+            var cmd = new UploadImageCommand(image, userID, ImageType.UserProfile);
+            var response = await _mediator.Send(cmd);
 
-                await _imageService.UploadImageAsync(userID, image, ImageType.UserProfile);
-
+            if (response == true)
                 return Ok();
+
+            return BadRequest("Something bad has happened while trying to upload image");
         }
 
         /// <summary>
@@ -118,18 +99,14 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<IEnumerable<SaleModel>>> GetUserSale()
         {
-                var userID = User.FindFirst(c => c.Type == "UserID").Value;
+            var userID = User.FindFirst(c => c.Type == "UserID").Value;
+            var query = new GetUserSalesQuery(userID);
+            var response = await _mediator.Send(query);
 
-                List<SaleModel> sales = new List<SaleModel>();
+            if (response != null)
+                return Ok(response);
 
-                await Task.Run(() =>
-                {
-                    sales = _saleService.GetUserSales(userID).ToList();
-                });
-
-                return sales;
-
-
+            return NotFound("Cannot get any available user sale");
         }
     }
 }

@@ -2,18 +2,15 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GamingShop.Data.Models;
 using GamingShop.Web.Data;
-using GamingShop.Service;
 using GamingShop.Web.API.Models.Response;
-using Microsoft.AspNetCore.Identity;
-using GamingShop.Service.Services;
 using GamingShop.Web.API.Models;
 using Microsoft.AspNetCore.Authorization;
-using AutoMapper;
 using GamingShop.Web.API.MediatR.Queries;
 using MediatR;
+using GamingShop.Web.API.MediatR.Queries.Games;
+using GamingShop.Data.DbContext;
 
 namespace GamingShop.Web.API.Controllers
 {
@@ -24,30 +21,18 @@ namespace GamingShop.Web.API.Controllers
     [ApiController]
     public class GamesController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IGame _gamesService;
-        private readonly IImage _imageService;
-        private readonly IMapper _mapper;
-
-        private readonly IMediator _mediator; 
-
+        private ApplicationDbContext _context;
+        private readonly IMediator _mediator;
+        private readonly ApplicationDbContextFactory _applicationDbContextFactory;
 
         /// <summary>
         /// Default constructor
         /// </summary>
         /// <param name="context">A Database context</param>
-        /// <param name="gameService">A Game Service</param>
-        /// <param name="userManager">A User Manager</param>
-        /// <param name="image">A Image Service</param>
-        public GamesController(ApplicationDbContext context, IGame gameService, UserManager<ApplicationUser> userManager,IImage image,IMapper mapper, IMediator mediator)
+        public GamesController(ApplicationDbContext context, IMediator mediator, ApplicationDbContextFactory applicationDbContextFactory)
         {
-            _context = context;
-            _gamesService = gameService;
-            _userManager = userManager;
-            _imageService = image;
-            _mapper = mapper;
             _mediator = mediator;
+            _applicationDbContextFactory = applicationDbContextFactory;
         }
 
         /// <summary>
@@ -74,25 +59,16 @@ namespace GamingShop.Web.API.Controllers
         [HttpGet("Search/{searchQuery}")]
         public async Task<ActionResult<IEnumerable<GameIndexResponseModel>>> GetBySearchQuery(string searchQuery)
         {
+            if (searchQuery == string.Empty)
+                return BadRequest("Search query is empty");
 
-                if (searchQuery == string.Empty)
-                    return BadRequest("Search query is null");
+            var query = new GetGamesBySearchQueryQuery(searchQuery);
+            var response = await _mediator.Send(query);
 
-                List<Game> games = new List<Game>();
+            if (response == null)
+                return NotFound($"Cannot find game with {searchQuery} query" );
 
-                await Task.Run(() =>
-                {
-                    games = _gamesService.GetAllBySearchQuery(searchQuery).ToList();
-                });
-
-                List<GameIndexResponseModel> response = new List<GameIndexResponseModel>();
-
-                foreach (var game in games)
-                {
-                    response.Add(_mapper.Map<GameIndexResponseModel>(game));
-                }
-
-                return response;
+            return Ok(response);
 
         }
 
@@ -124,42 +100,20 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> PutGame(int id, [FromBody] UpdateGameModel game)
         {
-            var userID = User.FindFirst(c => c.Type == "UserID").Value;
-
-            var dayOfLaunch = game.LaunchDate.Split("/")[0];
-            var monthOfLaunch = game.LaunchDate.Split("/")[1];
-            var yearOfLaunch = game.LaunchDate.Split("/")[2];
-
-            game.DayOfLaunch = dayOfLaunch;
-            game.MonthOfLaunch = monthOfLaunch;
-            game.YearOfLaunch = yearOfLaunch;
-            game.OwnerID = userID;
-            game.ImageUrl = _imageService.GetImageNameForGame(game.ID);
-
             if (id != game.ID)
             {
                 return BadRequest();
             }
 
-            _context.Entry(game).State = EntityState.Modified;
+            string userID = User.FindFirst(c => c.Type == "UserID").Value;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GameExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            var query = new UpdateGameQuery(game, userID);
+            var result = await _mediator.Send(query);
 
-            return Ok();
+            if (result == true)
+                return Ok("Successfully updated");
+
+            return BadRequest("Something went wrong while trying to update your game");
         }
 
         /// <summary>
@@ -170,7 +124,8 @@ namespace GamingShop.Web.API.Controllers
         [HttpDelete("DeleteGame/{id}")]
         public async Task<ActionResult<Game>> DeleteGame(int id)
         {
-
+            using(_context = _applicationDbContextFactory.CreateDbContext())
+            {
                 var game = await _context.Games.FindAsync(id);
                 if (game == null)
                 {
@@ -181,8 +136,7 @@ namespace GamingShop.Web.API.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok();
-
-
+            }
         }
 
         /// <summary>
@@ -192,7 +146,11 @@ namespace GamingShop.Web.API.Controllers
         /// <returns>Returns true if game with <paramref name="id"/> already exists in database</returns>
         private bool GameExists(int id)
         {
-            return _context.Games.Any(e => e.ID == id);
+            using(_context = _applicationDbContextFactory.CreateDbContext())
+            {
+                return _context.Games.Any(e => e.ID == id);
+
+            }
         }
     }
 }

@@ -1,17 +1,13 @@
-﻿using AutoMapper;
-using GamingShop.Data.Models;
-using GamingShop.Service;
+﻿using GamingShop.Data.Models;
 using GamingShop.Service.Services;
+using GamingShop.Web.API.MediatR.Commands.Message;
+using GamingShop.Web.API.MediatR.Queries.Message;
 using GamingShop.Web.API.Models;
 using GamingShop.Web.API.Models.Response;
 using GamingShop.Web.API.Pagination;
-using GamingShop.Web.Data;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,23 +20,16 @@ namespace GamingShop.Web.API.Controllers
     [ApiController]
     public class MessageController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
         private readonly IMessage _messageService;
-        private readonly IGame _gameService;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public MessageController(ApplicationDbContext context, IMessage service,
-            IGame gameService, UserManager<ApplicationUser> userManager,IMapper mapper)
+        public MessageController(IMediator mediator, IMessage service)
         {
-            _dbContext = context;
             _messageService = service;
-            _gameService = gameService;
-            _userManager = userManager;
-            _mapper = mapper;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -52,42 +41,13 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> SendMessage([FromBody]NewMessage message)
         {
-            if (message == null)
-                return BadRequest("Invalid message model");
+            var cmd = new SendMessageCommand(message);
+            var response = await _mediator.Send(cmd);
 
-            Message msg;
+            if (response == true)
+                return Ok("Message has been sent successfully");
 
-            if(message.Replying == false)
-            {
-                var recipientID = _gameService.GetByID(message.GameID).OwnerID;
-                var recipient = await _userManager.FindByIdAsync(recipientID);
-                var sender = await _userManager.FindByIdAsync(message.SenderID);
-
-                msg = new Message
-                {
-                    Content = message.Content,
-                    Read = false,
-                    RecipientEmail = recipient.Email,
-                    RecipientID = recipientID,
-                    SenderID = message.SenderID,
-                    Sent = DateTime.UtcNow,
-                    Subject = message.Subject,
-                    SenderEmail = sender.Email
-
-                };
-            }
-            else
-            {
-                msg = _mapper.Map<Message>(message);
-            }
-           
-
-
-            _dbContext.Messages.Add(msg);
-
-            await _dbContext.SaveChangesAsync();
-
-            return Ok();
+            return BadRequest("Something bad has happened while trying to send message");
 
         }
 
@@ -137,18 +97,13 @@ namespace GamingShop.Web.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<MessageDetailsResponseModel>> GetByMessageByID(int id)
         {
-            var result = await _messageService.GetByIDAsync(id);
+            var query = new GetMessageByIDQuery(id);
+            var response = await _mediator.Send(query);
 
-            if(result != null)
-            {
-                var response = _mapper.Map<MessageDetailsResponseModel>(result);
-                
-                return response;
+            if(response != null)
+                return Ok(response);
 
-            }
-
-            
-            return NotFound();
+            return NotFound($"Cannot find message with id of{id}");
         }
 
     }
