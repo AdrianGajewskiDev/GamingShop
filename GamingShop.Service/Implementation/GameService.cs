@@ -10,37 +10,28 @@ namespace GamingShop.Service
     public class GameService : IGame
     {
         private ApplicationDbContext _dbContext;
-        private ApplicationDbContextFactory _dbFactory;
 
-        public GameService(ApplicationDbContextFactory contextfactory)
+        public GameService(ApplicationDbContext contextfactory)
         {
-            _dbFactory = contextfactory;
+            _dbContext = contextfactory;
         }
 
         public IEnumerable<Game> GetAll()
         {
-            using (_dbContext = _dbFactory.CreateDbContext())
-            {
                 return _dbContext.Games;
-            }
         }
 
         public IEnumerable<Game> GetAllAvailable()
         {
-            using (_dbContext = _dbFactory.CreateDbContext())
-            {
                 var games = GetAll().Where(x => x.Sold == false);
 
                 return games;
-            }
 
         }
 
         public IEnumerable<Game> GetAllByPlatform(Platform platform)
         {
 
-            using (_dbContext = _dbFactory.CreateDbContext())
-            {
 
                 IList<Game> games = new List<Game>();
 
@@ -81,15 +72,12 @@ namespace GamingShop.Service
                 }
 
                 return games;
-            }
 
 
         }
 
         public IEnumerable<Game> GetAllBySearchQuery(string searchQuery)
         {
-            using (_dbContext = _dbFactory.CreateDbContext())
-            {
 
 
                 var query = searchQuery.ToLower();
@@ -97,45 +85,32 @@ namespace GamingShop.Service
                 IEnumerable<Game> result = GetAll().Where(x => x.Sold == false && x.Title.ToLower().Contains(query) | x.Platform.ToLower().Contains(query) | x.Producent.ToLower().Contains(query));
 
                 return result;
-            }
         }
 
         public IEnumerable<Game> GetAllByType(string type)
         {
-            using (_dbContext = _dbFactory.CreateDbContext())
-            {
                 var t = type.ToLower();
 
                 return GetAllAvailable().Where(x => x.Type.ToLower() == t);
-            }
         }
 
         public Game GetByID(int id)
         {
-            using (_dbContext = _dbFactory.CreateDbContext())
-            {
                 return _dbContext.Games.Where(x => x.ID == id).FirstOrDefault();
-            }
         }
 
         public Game GetByTitle(string title)
         {
-            using (_dbContext = _dbFactory.CreateDbContext())
-            {
                 var t = title.ToLower();
 
                 return _dbContext.Games.Where(x => x.Title.ToLower() == t).FirstOrDefault();
-            }
         }
 
         public string GetDateOfLaunch(int id)
         {
-            using (_dbContext = _dbFactory.CreateDbContext())
-            {
                 var game = GetByID(id);
 
                 return $"{game.DayOfLaunch}/{game.MonthOfLaunch}/{game.YearOfLaunch}";
-            }
         }
     }
 }

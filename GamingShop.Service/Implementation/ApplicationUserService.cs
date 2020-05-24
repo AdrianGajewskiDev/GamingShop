@@ -13,91 +13,63 @@ namespace GamingShop.Service
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private ApplicationDbContext _dbContext;
-        private readonly ApplicationDbContextFactory _dbContextFactory;
 
         public ApplicationUserService(UserManager<ApplicationUser> userManager,
-                                      ApplicationDbContextFactory contextFactory,
-                                      SignInManager<ApplicationUser> signInManager)
+         ApplicationDbContext dbContext, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
-            _dbContextFactory = contextFactory;
             _signInManager = signInManager;
+            _dbContext = dbContext;
 
         }
 
         public ApplicationUser GetByID(string ID)
         {
-            using (_dbContext = _dbContextFactory.CreateDbContext())
-            {
-                return _dbContext.Users.Where(user => user.Id == ID).FirstOrDefault();
-
-            }
+            return _dbContext.Users.Where(user => user.Id == ID).FirstOrDefault();
         }
 
         public async Task<ApplicationUser> GetUser(ClaimsPrincipal claims)
         {
-            using (_dbContext = _dbContextFactory.CreateDbContext())
-            {
+            var user = await _userManager.GetUserAsync(claims);
 
-                var user = await _userManager.GetUserAsync(claims);
-
-                return user;
-            }
+            return user;
         }
 
         public string GetUserID(ClaimsPrincipal claims)
         {
-            using (_dbContext = _dbContextFactory.CreateDbContext())
-            {
-                return _userManager.GetUserId(claims);
-            }
+            return _userManager.GetUserId(claims);
         }
 
         public bool IsSignedIn(ClaimsPrincipal claims)
         {
-            using (_dbContext = _dbContextFactory.CreateDbContext())
-            {
-                return _signInManager.IsSignedIn(claims);
-            }
+            return _signInManager.IsSignedIn(claims);
         }
 
         public async void UpdateEmail(ClaimsPrincipal user, string newemail)
         {
-            using (_dbContext = _dbContextFactory.CreateDbContext())
-            {
+            var currentUser = await GetUser(user);
 
-                var currentUser = await GetUser(user);
+            currentUser.Email = newemail;
 
-                currentUser.Email = newemail;
-
-                _dbContext.SaveChanges();
-            }
+            _dbContext.SaveChanges();
         }
 
         public async void UpdatePhoneNumber(ClaimsPrincipal user, string newPhoneNumber)
         {
-            using (_dbContext = _dbContextFactory.CreateDbContext())
-            {
+            var currentUser = await GetUser(user);
 
-                var currentUser = await GetUser(user);
+            currentUser.PhoneNumber = newPhoneNumber;
 
-                currentUser.PhoneNumber = newPhoneNumber;
-
-                _dbContext.SaveChanges();
-            }
+            _dbContext.SaveChanges();
         }
 
         public async void UpdateUsername(ClaimsPrincipal user, string newUsername)
         {
-            using (_dbContext = _dbContextFactory.CreateDbContext())
-            {
+            var currentUser = await GetUser(user);
 
-                var currentUser = await GetUser(user);
+            currentUser.UserName = newUsername;
 
-                currentUser.UserName = newUsername;
-
-                _dbContext.SaveChanges();
-            }
+            _dbContext.SaveChanges();
         }
     }
 }

@@ -10,20 +10,17 @@ namespace GamingShop.Service.Implementation
     public class SalesService : ISale
     {
         private ApplicationDbContext _context;
-        private readonly ApplicationDbContextFactory _contextFactory;
         private readonly IImage _imageService;
 
-        public SalesService(ApplicationDbContextFactory context, IImage imageService)
+        public SalesService(ApplicationDbContext context, IImage imageService)
         {
-            _contextFactory = context;
+            _context = context;
             _imageService = imageService;
         }
 
         public IEnumerable<SaleModel> GetUserSales(string userID)
         {
 
-            using (_context = _contextFactory.CreateDbContext())
-            {
                 var games = _context.Games.Where(x => x.OwnerID == userID && x.Sold == false).ToList();
 
                 List<SaleModel> sales = new List<SaleModel>();
@@ -40,7 +37,6 @@ namespace GamingShop.Service.Implementation
                 }
 
                 return sales;
-            }
              
         }
     }

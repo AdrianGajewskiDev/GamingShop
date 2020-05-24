@@ -10,19 +10,16 @@ namespace GamingShop.Service
     public class CartService : ICart
     {
         private ApplicationDbContext _dbContext;
-        private readonly ApplicationDbContextFactory _factory;
         private readonly IGame _gameService;
 
-        public CartService(ApplicationDbContextFactory contextFactory, IGame service)
+        public CartService(ApplicationDbContext contextFactory, IGame service)
         {
             _gameService = service;
-            _factory = contextFactory;
+            _dbContext = contextFactory;
         }
 
         public void AddToCart(int id, Game item)
         {
-            using (_dbContext = _factory.CreateDbContext())
-            {
                 var cart = GetById(id);
 
                 var cartItem = new CartItem { CartID = cart.ID, GameID = item.ID };
@@ -30,15 +27,11 @@ namespace GamingShop.Service
                 _dbContext.CartItems.Add(cartItem);
 
                 _dbContext.SaveChanges();
-            }
-
 
         }
 
         public async Task ClearCart(int id)
         {
-            using (_dbContext = _factory.CreateDbContext())
-            {
                 var cart = GetById(id);
 
                 var cartItems = _dbContext.CartItems.Where(x => x.CartID == cart.ID);
@@ -49,22 +42,15 @@ namespace GamingShop.Service
 
                 }
                 await _dbContext.SaveChangesAsync();
-            }
         }
 
         public Cart GetById(int id)
         {
-            using (_dbContext = _factory.CreateDbContext())
-            {
-
                 return _dbContext.Carts.Where(x => x.ID == id).FirstOrDefault();
-            }
         }
 
         public IEnumerable<Game> GetGames(int cartId)
         {
-            using (_dbContext = _factory.CreateDbContext())
-            {
                 var items = _dbContext.CartItems.Where(x => x.CartID == cartId);
 
                 List<Game> games = new List<Game>();
@@ -77,21 +63,17 @@ namespace GamingShop.Service
 
                 return games;
 
-            }
 
         }
 
         public void RemoveFormCart(int id, Game item)
         {
-            using (_dbContext = _factory.CreateDbContext())
-            {
                 var cart = GetById(id);
 
                 var cartItem = _dbContext.CartItems.Where(x => x.CartID == cart.ID).FirstOrDefault();
 
                 _dbContext.CartItems.Remove(cartItem);
                 _dbContext.SaveChanges();
-            }
         }
     }
 }

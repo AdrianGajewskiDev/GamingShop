@@ -11,12 +11,10 @@ namespace GamingShop.Service.Implementation
     public class MessageService : IMessage
     {
         private ApplicationDbContext _dbContext;
-        private readonly ApplicationDbContextFactory _dbContextFactory;
 
-        public MessageService(ApplicationDbContextFactory context)
+        public MessageService(ApplicationDbContext context)
         {
-            _dbContextFactory = context;
-            _dbContext = _dbContextFactory.CreateDbContext();
+            _dbContext = context;
         }
 
         public IEnumerable<Message> GetAllSentByUser(string userID)

@@ -15,33 +15,27 @@ namespace GamingShop.Service.Implementation
     public class ImageService : IImage
     {
         private ApplicationDbContext _context;
-        private readonly ApplicationDbContextFactory _factory;
         private readonly ApplicationOptions _options;
 
-        public ImageService(ApplicationDbContextFactory context, IOptions<ApplicationOptions> options)
+        public ImageService(ApplicationDbContext context, IOptions<ApplicationOptions> options)
         {
-            _factory = context;
+            _context =  context;
             _options = options.Value;
         }
 
         public string GetImageNameForGame(int id)
         {
-            using (_context = _factory.CreateDbContext())
-            {
                 var image = _context.Images.Where(x => x.GameID == id).FirstOrDefault();
 
                 if (image == null)
                     return "Image not found!!";
 
                 return image.UniqueName;
-            }
 
         }
 
         public string GetImagePathForGame(int id)
         {
-            using (_context = _factory.CreateDbContext())
-            {
 
                 var image = _context.Images.Where(x => x.GameID == id).FirstOrDefault();
 
@@ -49,13 +43,10 @@ namespace GamingShop.Service.Implementation
                     return "Image not found!!";
 
                 return image.Path;
-            }
         }
 
         public string GetImagePathForUser(string userID)
         {
-            using (_context = _factory.CreateDbContext())
-            {
 
                 var images = _context.Images.Where(img => img.UserID == userID);
 
@@ -65,24 +56,18 @@ namespace GamingShop.Service.Implementation
                 var sortedImages = images.OrderByDescending(img => img.Posted);
 
                 return sortedImages.First().UniqueName;
-            }
         }
 
         public async Task UploadImageAsync(int ID, IFormFile image, ImageType type)
         {
-            using (_context = _factory.CreateDbContext())
-            {
 
                 var id = ID.ToString();
 
                 await UploadImageAsync(id, image, type);
-            }
         }
 
         public async Task UploadImageAsync(string ID, IFormFile image, ImageType type)
         {
-            using (_context = _factory.CreateDbContext())
-            {
 
                 if (image == null)
                     throw new ArgumentNullException();
@@ -131,7 +116,6 @@ namespace GamingShop.Service.Implementation
 
                 await _context.SaveChangesAsync();
 
-            }
         }
     }
 }
